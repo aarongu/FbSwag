@@ -81,6 +81,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 	  printPictures();
 	  //printNames();
 	  testAPI();
+	  getNames();
+	  getID(userInput);
 	  getStatuses();
     } else {
       FB.login();
@@ -178,11 +180,21 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   }
   
 };
+	var index;
+	var id;
+	function getID (var input) {
+	    	for(var i = 0; i < names.length; i++) {
+		  	var lower = names[i].toLowerCase();
+		  	if (lower == userInput) {
+		  		index = i;	 
+		  	}
+	  	}
+	  	id = ids[index];
+	}
 
-  var index; // index of name in name array
-  var id; // id #
+  var userInput; // index of name in name array
   function getName() {
-  	var userInput = document.getElementById("tags").name;
+  	userInput = document.getElementById("tags").name;
   	if (userInput == null) {
   		console.log("doesnt work");
   	} else {
@@ -190,13 +202,6 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   	}
   	document.getElementbyId("demo").innerHTML=(userInput);
   	userInput = userInput.toLowerCase();
-  	for(var i = 0; i < names.length; i++) {
-  		var lower = names[i].toLowerCase();
-  		if (lower == userInput) {
-  			index = i;	 
-  		}
-  	}
-  	id = ids[index];
   }
 
   // Load the SDK asynchronously
