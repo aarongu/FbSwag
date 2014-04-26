@@ -86,6 +86,20 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     }
   });
   
+  function showRelationship() {
+  	FB.api('me/friends', function(response) {
+  		var names = new Array(); 
+  		var ids = new Array(); 
+  		for (var i = 0; i < response.data.length; i++) {
+  			names[i] = response.data[i]['name'];
+  			ids[i] = response.data[i]['id'];
+  		}
+  		
+  		var p = document.getElementById("relationship"); 
+  		p.innerHTML = "Relatinship Status";
+  	}
+  }
+  
   function printPictures() {
 	FB.api('me/friends', function(response) {
 		var names = new Array();
@@ -169,6 +183,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     <form action="//webster.cs.washington.edu/params.php">
   		<label for="tags">Search: </label>
   		<input id="tags" name="name" />
+  		<p id="relationship" name="status">Relationship Status: </p>
         <input type="submit" />
         </form>
 	</div>
