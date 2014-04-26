@@ -120,9 +120,26 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			// document.getElementById('demo2').innerHTML=(response.data[0]["message"]); 
 			var gg = new Array();
 			for (var i = 0; i < response.data.length; i++) {
-				// gg[i] = {message: response.data[i]['message'], likes: response.data[i]['likes']['data'].length};
-				document.getElementbyId("demo2").innerHTML=response.data[i]['message'];
-				// document.getElementbyId("demo4").innerHTML=(response.data[i]['likes']['data'].length);
+				var likes;
+				if (response.data[i]['likes'] != null) {
+					likes = response.data[i]['likes']['data'].length;
+				} else {
+					likes = 0;
+				}
+				var message = response.data[i]['message'];
+				message = message.replace(/\n/g, '<br />');
+				console.log(message);
+				gg[i] = new Array(message, likes);
+				console.log(response.data[i]['message']);
+				// document.getElementById("demo2").innerHTML+=(gg[i][0] + ' Likes: ' + gg[i][1] + '<br />');
+			}
+			gg.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+			})(1));
+			for (var i = 0; i < gg.length; i++) {
+				document.getElementById('demo2').innerHTML+=(gg[i][0] + ' Likes: ' + gg[i][1] + '<br />');
 			}
 		});
 		// getStatuses();
