@@ -181,7 +181,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   var index; // index of name in name array
   var id; // id #
   function getName() {
-  	var userInput = document.getElementById("tags").name;
+  	var userInput = document.getElementById("tags");
   	if (userInput == null) {
   		console.log("doesnt work");
   	} else {
