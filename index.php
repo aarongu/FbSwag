@@ -139,7 +139,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
             
 		});
         
-        FB.api((id + '/interests'), function(response) {
+        FB.api((id + '/likes'), function(response) {
 			for (var i = 0; i < Math.min(response.data.length, 3); i++) {
 				document.getElementById('interest_' + i + 1).innerHTML+=response.data[i]['name'];
 			}
@@ -449,7 +449,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
         </form>
     <p id="invalid"></p>
 	</div>
-	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status, user_relationships, user_interests, friends_interests, user_location, friends_location" width="300" max-rows="1"></fb:login-button></p> 
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status, user_relationships, user_likes, friends_likes, user_location, friends_location" width="300" max-rows="1"></fb:login-button></p> 
     
     
 </div>
