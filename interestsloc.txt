@@ -5,5 +5,8 @@
 		});
 		
 		FB.api((id + '?fields=location'), function(response) {
-			document.getElementById('id').innerHTML=response['location']['name'];
+			if (response['location'] != null)
+				document.getElementById('id').innerHTML=response['location']['name'];
+			else
+				document.getElementById('id').innerHTML="No Location Data";
 		});
