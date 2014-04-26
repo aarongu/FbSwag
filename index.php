@@ -144,7 +144,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   				return 0;
   			}
   		});
-  	}
+  	});
   }
   
   function printNames() {
