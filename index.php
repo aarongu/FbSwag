@@ -242,9 +242,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		*/
          for (var i = 1; i <= 3; i++) {
            //document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
-           comments_graph_name_1
-           document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i][0];
-           document.getELementById("comments_graph_" + i).style.width = 100.0 * comment[i][1] / comment[0][1] + "%"; 
+           document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
+           document.getELementById("comments_graph_" + i).style.width = int(100.0 * comment[i - 1][1] / comment[0][1]) + "%"; 
          }
 
         function getIndex(commentnames, dudename) {
