@@ -176,6 +176,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 	
   }
   
+};
+
   var index; // index of name in name array
   var id; // id #
   function getName() {
@@ -190,8 +192,6 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   	}
   	id = ids[index];
   }
-  
-};
 
   // Load the SDK asynchronously
   (function(d){
