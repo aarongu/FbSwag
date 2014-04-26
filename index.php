@@ -40,17 +40,17 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   function printPictures() {
 	name = location.search;
 	if (name.search("name=") != -1) {
-	console.log("name: " + name);
-	name = name.substr(6); 
-	name = name.replace(/\+/g, " ");
-	document.getElementById("name").innerHTML=name;
-	console.log("name: " + name);
+        //console.log("name: " + name);
+        name = name.substr(6); 
+        name = name.replace(/\+/g, " ");
+        //document.getElementById("name").innerHTML=name;
+        //console.log("name: " + name);
+    
     
     ///////////////
     // INSERTION //
     //////////////
-    var current_name = document.getElementById("current_name");
-    current_name.innerHTML = name; 
+    document.getElementById("current_name").innerHTML = name; 
     ///////////////
     // INSERTION //
     //////////////
