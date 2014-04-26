@@ -160,8 +160,25 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			#####PHOTOS#####
 			
 			*/
-			for (var i = 0; i < 5; i++) {
-				document.getElementById('images').innerHTML += ('<img src="' + pictures[i][0] + '" alt="image" />' + pictures[i][1]);
+            
+            ///////////////
+            // INSERTION //
+            //////////////
+			for (var i = 1; i <= 3; i++) {
+				//document.getElementById('images').innerHTML += ('<img src="' + pictures[i][0] + '" alt="image" />' + pictures[i][1]);
+                if (i == 1) {
+                    var current_picture = document.getElementById("pic_1");
+                    var current_name = document.getElementById("pic_name_1");
+                } else if (i == 2) {
+                    var current_picture = document.getElementById("pic_2");
+                    var current_name = document.getElementById("pic_name_2");
+                } else {
+                    var current_picture = document.getElementById("pic_3");
+                    var current_name = document.getElementById("pic_name_3");
+                }
+                
+                current_picture.src = pictures[i][0];
+                current_name.innerHTML = pictures[i][1]; 
 			}
 
 		});
@@ -400,7 +417,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
         </form>
     <p id="invalid"></p>
 	</div>
-	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status" width="300" max-rows="1"></fb:login-button></p> 
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status, user_relationships, user_interests, friends_interests" width="300" max-rows="1"></fb:login-button></p> 
     
     
 </div>
@@ -462,9 +479,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
      <div class="col-sm-4 col-xs-6">
       
         <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="/assets/example/bg_suburb.jpg" class="img-responsive"></div>
+          <div class="panel-thumbnail"><img id="pic_1" src="" class="img-responsive"></div>
           <div class="panel-body">
-            <p class="lead">NAME</p>
+            <p class="lead" id="pic_name_1">NAME</p>
 
           </div>
         </div>
@@ -475,9 +492,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <div class="col-sm-4 col-xs-6">
       
         <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="//placehold.it/450X300/DD66DD/FFF" class="img-responsive"></div>
+          <div class="panel-thumbnail"><img id="pic_2" src="" class="img-responsive"></div>
           <div class="panel-body">
-            <p class="lead">NAME</p>
+            <p class="lead" id="pic_name_2">NAME</p>
           </div>
         </div>
 
@@ -487,9 +504,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <div class="col-sm-4 col-xs-6">
       
         <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="//placehold.it/450X300/2222DD/FFF" class="img-responsive"></div>
+          <div class="panel-thumbnail"><img id="pic_3" src="" class="img-responsive"></div>
           <div class="panel-body">
-            <p class="lead">NAME</p>
+            <p class="lead" id="pic_name_3">NAME</p>
           </div>
         </div>
 
