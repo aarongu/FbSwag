@@ -390,6 +390,19 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 <div class="jumbotron hero-spacer">
     <div id="poop">
   <img src ="http://i.imgur.com/Kf0Papj.png" alt="pic">
+    
+    
+    <div class="ui-widget" id="test">
+    <form action="">
+  		<label for="tags">Search Friends: </label>
+  		<input id="tags" name="name" />
+        <input type="submit" />
+        </form>
+    <p id="invalid"></p>
+	</div>
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status" width="300" max-rows="1"></fb:login-button></p> 
+    
+    
 </div>
   <h1 id="current_name"></h1>
 </div>
@@ -536,7 +549,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
      <div class="col-sm-4 col-xs-6">
       
         <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="/assets/example/bg_suburb.jpg" class="img-responsive"></div>
+          <div class="panel-thumbnail"><img src="http://placehold.it/450X300/DD66DD/FFF" class="img-responsive"></div>
           <div class="panel-body">
             <p class="lead">Name</p>
 
