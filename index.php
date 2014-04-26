@@ -258,11 +258,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		*/
          for (var i = 1; i <= 4; i++) {
            //document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
-           document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
-           console.log(commentnames[i - 1][1]);
-           console.log(commentnames[0][1]);
            var num = parseInt(100.0 * commentnames[i - 1][1] / commentnames[0][1], 10) + "%";
-           console.log(num);
+           document.getElementById("comments_graph_name_" + i).innerHTML =  commentnames[i - 1][0]+ " / " + commentnames[i - 1][1];
            document.getElementById("comments_graph_" + i).style.width = num;
            
            
@@ -308,8 +305,15 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		#####MOST LIKES#####
 		
 		*/
-         for (var i = 0; i < likecount.length; i++) {
-           //document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
+         
+         for (var i = 1; i <= 4; i++) {
+          //document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
+           var num = parseInt(100.0 * likecount[i - 1][1] / likecount[0][1], 10) + "%";
+           document.getElementById("likes_graph_name_" + i).innerHTML =  likecount[i - 1][0]+ " / " + likecount[i - 1][1];
+           document.getElementById("likes_graph_" + i).style.width = num;
+           
+           
+           //document.getElementById("comments_graph_" + i).style.width = "100%"; 
          }
 
         function getIndex(likecount, dudename) {
@@ -661,21 +665,21 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <div class="panel panel-default">
            <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Likes by Friends</h4></div>
         <div class="panel-body">
-              <span class = "bar_names"> NAME </span>
+              <span class = "bar_names" id="likes_graph_name_1"> NAME </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
+                <div id="likes_graph_1" class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
               </div>
-              <span class = "bar_names"> NAME </span>
+              <span class = "bar_names" id="likes_graph_name_2"> NAME </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
+                <div id="likes_graph_2" class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
               </div>
-              <span class = "bar_names"> NAME </span>
+              <span class = "bar_names" id="likes_graph_name_3"> NAME </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
+                <div id="likes_graph_3" class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
               </div>
-              <span class = "bar_names"> NAME </span>
+              <span class = "bar_names" id="likes_graph_name_4"> NAME </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
+                <div id="likes_graph_4" class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
               </div>
               
             </div>
