@@ -204,8 +204,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			})(1));
             
 			for (var i = 1; i <= 3; i++) {
-                document.getElementById("status_likes_" + i).innerHTML = gg[i][1] + " likes";
-                document.getElementById("status_" + i).innerHTML = gg[i][0]; 
+                document.getElementById("status_likes_" + i).innerHTML = gg[i - 1][1] + " likes";
+                document.getElementById("status_" + i).innerHTML = gg[i - 1][0]; 
 			}
 		});
 		
@@ -240,8 +240,11 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		#####MOST COMMENTS#####
 		
 		*/
-         for (var i = 0; i < commentnames.length; i++) {
-           document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
+         for (var i = 1; i <= 3; i++) {
+           //document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
+           comments_graph_name_1
+           document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i][0];
+           document.getELementById("comments_graph_" + i).style.width = 100.0 * comment[i][1] / comment[0][1] + "%"; 
          }
 
         function getIndex(commentnames, dudename) {
@@ -420,7 +423,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
         </form>
     <p id="invalid"></p>
 	</div>
-	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status, user_relationships, user_interests, friends_interests" width="300" max-rows="1"></fb:login-button></p> 
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status, user_relationships, user_interests, friends_interests, user_location, friends_location" width="300" max-rows="1"></fb:login-button></p> 
     
     
 </div>
@@ -557,13 +560,14 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 <hr>    
     
 <!--/col-->
+
   <div class="row">
-      <h2> Most Liked Pictures</h2>
+      <h2>Closest Friends</h2>
   
      <div class="col-sm-4 col-xs-6">
       
         <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="http://placehold.it/450X300/DD66DD/FFF" class="img-responsive"></div>
+          <div class="panel-thumbnail"><img id="friend_1" src="" class="img-responsive"></div>
           <div class="panel-body">
             <p class="lead">Name</p>
 
@@ -596,7 +600,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 
       
       </div>
-  </div>
+  </div> 
 <hr>  
     <div class="row">
       <div class="col-md-12"><h2>Graphs</h2></div>
@@ -608,21 +612,21 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <div class="panel panel-default">
            <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Comments by Friend</h4></div>
         <div class="panel-body">
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
+                <div class="progress-bar progress-bar-info" id="comments_graph_1" style="" title="Stuff"></div>
               </div>
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
+                <div class="progress-bar progress-bar-success" id="comments_graph_2" style="" title="stuff 2"></div>
               </div>
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
+                <div class="progress-bar progress-bar-warning" id="comments_graph_3" style="" title="stuff 3"></div>
               </div>
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
               <div class="progress">
-                <div class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
+                <div class="progress-bar progress-bar-danger" id="comments_graph_4" style="" stuff="stuff4"></div>
               </div>
               
             </div>
