@@ -113,7 +113,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			names[i] = response.data[i]['name'];
 			ids[i] = response.data[i]['id'];
 		}
-		console.log(ids[1]);
+		console.log(ids[1] + '/photos');
 		FB.api((ids[1] + '/photos'), function(response) {
 			var pictures = new Array();
 			console.log(response);
