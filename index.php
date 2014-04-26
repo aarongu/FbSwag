@@ -110,23 +110,40 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			names[i] = response.data[i]['name'];
 			ids[i] = response.data[i]['id'];
 		}
-		console.log(ids[1] + '/photos');
+		console.log(id[1] + '/photos');
 		FB.api((ids[1] + '/photos'), function(response) {
-			for (var j = 0; j < 5; j++) {
-				console.log(response.data[j]['source']);
-				document.getElementById('images').innerHTML += ('<img src="' + response.data[j]['source'] + '" alt="image" />');
+			for (var i = 0; i < 5; i++) {
+				console.log(response.data[i]['source']);
+				document.getElementById('images').innerHTML += ('<img src="' + response.data[i]['source'] + '" alt="image" />');
 			}
 		});
 	});
   };
   
+  var gg;
   function getStatuses {
   	FB.api(id + '/statuses', function(response) {
-  		var statuses = new Array();
-  		var map = new Object();
+		gg = new Array();
+  		// for (var i = 0; i < response.data.length; i++) {
+  		// 	statuses[i] = response.data['message'];
+  		// }
+  		// for (var i = 0; i < response.data.length; i++) {
+  		// 	likeCount[i] = response.data['likes']['data'].length;
+  		// }
   		for (var i = 0; i < response.data.length; i++) {
-  			statuses[i] = response.data['message'];
+  			gg[i] = {message: response.data['message'], likes: response.data['likes']['data'].length};
+  			document.write(gg[i].message);
+  			document.write(gg[i].likes);
   		}
+  		gg.sort(function (a, b) {
+  			if (a.likes > b.likes) {
+  				return 1;
+  			} else if (a.likes < b.likes) {
+  				return -1;
+  			} else {
+  				return 0;
+  			}
+  		});
   	}
   }
   
