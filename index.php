@@ -4,60 +4,6 @@
         <!-- CSS -->
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
 	<link href="index.css" rel="stylesheet" type="text/css" />
-    <style type="text/css">
-
-      /* Sticky footer styles
-      -------------------------------------------------- */
-
-      html,
-      body {
-        height: 100%;
-        /* The html and body elements cannot have any padding or margin. */
-      }
-
-      /* Wrapper for page content to push down footer */
-      #wrap {
-        min-height: 100%;
-        height: auto !important;
-        height: 100%;
-        /* Negative indent footer by it's height */
-        margin: 0 auto -60px;
-      }
-
-      /* Set the fixed height of the footer here */
-      #push,
-      #footer {
-        height: 60px;
-      }
-      #footer {
-        background-color: #f5f5f5;
-      }
-
-      /* Lastly, apply responsive CSS fixes as necessary */
-      @media (max-width: 767px) {
-        #footer {
-          margin-left: -20px;
-          margin-right: -20px;
-          padding-left: 20px;
-          padding-right: 20px;
-        }
-      }
-
-
-
-      /* Custom page CSS
-      -------------------------------------------------- */
-      /* Not required for template or sticky footer method. */
-
-      .container {
-        width: auto;
-        max-width: 680px;
-      }
-      .container .credit {
-        margin: 20px 0;
-      }
-
-    </style>
     
     <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
@@ -81,7 +27,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     if (response.status === 'connected') {
       console.log('Logged in');
 	  printPictures();
-	  printNames();
+	 // printNames();
 	  testAPI();
     } else {
       FB.login();
@@ -93,44 +39,115 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 	if (name.search("name=") != -1) {
 	console.log("name: " + name);
 	name = name.substr(6); 
-		name = name.replace("+", " ");
-		name = name.replace("+", " ");
+	name = name.replace(/\+/g, " ");
+	document.getElementById("name").innerHTML=name;
 	console.log("name: " + name);
+	FB.api('me?fields=name,id', function(response) {
+		var me = response['name'];
+		var meId = response['id'];
+		console.log(me + ' ' + meId);
 	FB.api('me/friends', function(response) {
-	console.log('printPictures called');
 		var names = new Array();
 		var ids = new Array();
 		for (var i = 0; i < response.data.length; i++) {
 			names[i] = response.data[i]['name'];
 			ids[i] = response.data[i]['id'];
 		}
-		getID(name.toLowerCase(), names, ids);
+		var id = ids[names.indexOf(name)];
+		names[names.length] = me;
+		ids[ids.length] = meId;
+		if (name == me)
+			id = meId;
+		var availableTags = names.slice();
+		availableTags.sort();
+		$( "#tags" ).autocomplete({
+		  source: availableTags
+		});
+		if (names.indexOf(name) == -1) {
+			document.getElementById("invalid").innerHTML='Error: ' + name + ' is not a Facebook friend';
+			return;
+		}
 		console.log(ids[names.indexOf(name)] + "/photos");
 		console.log(ids[names.indexOf(name)]);
-		FB.api((ids[names.indexOf(name)] + "/photos"), function(response) {
-			var pictures = new Array();
-			for (var i = 0; i < 5; i++) {
-				pictures[i] = response.data[i]['source'];
-				console.log(response.data[i]['source']);
-				document.getElementById('images').innerHTML += ('<img src="' + response.data[i]['source'] + '" alt="image" />');
+		
+		FB.api((id + '?fields=relationship_status,significant_other'), function(response) {
+			if (response['relationship_status'] != null) {
+				var status = response['relationship_status'];
+				var so;
+				if (response['significant_other'] != null)
+					so = response['significant_other'].name;
+				var connector;
+				var to;
+				if (so != null) {
+					if (status == "Married" || status == "Widowed" || status == "Separated" || status == "Divoreced")
+						connector = "to";
+					else
+						connector = "with";
+				}
+				var string = name + ' is ' + status.toLowerCase();
+				if (connector != null)
+					string += ' ' + connector + ' ' + so;
+			} else 
+				var string = name + ' has no relationship status';
+			/*
+			var type;
+			if (so.length != 0) {
+				
 			}
+			var to = new Array("Engaged", "Married"
+			if (status == "Married")
+				type = "to";
+			else if (status == "In a Relationship"
+			var string = name + ' is ' + status + type + so;
+			*/
+			/*
+			
+			#####RELATIONSHIP STATUS#####
+			
+			*/
+			document.getElementById("relationship").innerHTML=string + '.';
 		});
-		FB.api((ids[names.indexOf(name)] + "/statuses"), function(response) {
-			console.log(response);
+		console.log(id);
+		FB.api((id + "/photos?limit=10000&fields=likes.limit(1000),source"), function(response) {
+			var pictures = new Array();
+			console.log(response.data.length);
+			for (var i = 0; i < response.data.length; i++) {
+				var likes;
+				var dat = response.data[i];
+				if (dat['likes'] != null)
+					likes = dat['likes'].data.length;
+				else
+					likes = 0;
+				pictures[i] = new Array(dat['source'], likes);
+			}
+			pictures.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+			})(1));
+			/*
+			
+			#####PHOTOS#####
+			
+			*/
+			for (var i = 0; i < 5; i++) {
+				document.getElementById('images').innerHTML += ('<img src="' + pictures[i][0] + '" alt="image" />' + pictures[i][1]);
+			}
+
+		});
+		FB.api((id + "/statuses?limit=1000&fields=likes.limit(1000),message"), function(response) {
 			// document.getElementById('demo2').innerHTML=(response.data[0]["message"]); 
 			var gg = new Array();
 			for (var i = 0; i < response.data.length; i++) {
 				var likes;
 				if (response.data[i]['likes'] != null) {
-					likes = response.data[i]['likes']['data'].length;
+					likes = response.data[i]['likes'].data.length;
 				} else {
 					likes = 0;
 				}
 				var message = response.data[i]['message'];
 				message = message.replace(/\n/g, '<br />');
-				console.log(message);
 				gg[i] = new Array(message, likes);
-				console.log(response.data[i]['message']);
 				// document.getElementById("demo2").innerHTML+=(gg[i][0] + ' Likes: ' + gg[i][1] + '<br />');
 			}
 			gg.sort((function(index){
@@ -138,92 +155,184 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
 				};
 			})(1));
-			for (var i = 0; i < gg.length; i++) {
+			for (var i = 0; i < 5/*gg.length*/; i++) {
 				document.getElementById('demo2').innerHTML+=(gg[i][0] + ' Likes: ' + gg[i][1] + '<br />');
 			}
 		});
+		
+			FB.api((ids[names.indexOf(name)] + "/statuses?limit=1000&fields=comments.limit(1000),from"), function(response) {
+        var comment = new Array();
+        commentnames = new Array();
+        for (var i = 0; i < response.data.length; i++) {
+
+          if (response.data[i]['comments'] != null) {
+            comment[i] = response.data[i]['comments']['data']; // returns the data array containing comments
+            for (var j = 0; j < comment[i].length; j++) {
+              var dudename = comment[i][j]['from']['name'];
+              if (dudename != name) {
+                var index = getIndex(commentnames, dudename);
+                if (index == -1) {
+                  commentnames.push(new Array(dudename, 1));
+                } else {
+                  commentnames[index][1]++;
+                }
+              }
+            }
+          }
+        }
+
+        commentnames.sort((function(index){
+          return function(a, b) {
+            return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+          };
+        })(1));
+		/*
+		
+		#####MOST COMMENTS#####
+		
+		*/
+         for (var i = 0; i < commentnames.length; i++) {
+           document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
+         }
+
+        function getIndex(commentnames, dudename) {
+          for (var i = 0; i < commentnames.length; i++) {
+            if (commentnames[i][0] == dudename) {
+              return i;
+            }
+          }
+          return -1;
+        }
+
+      FB.api((ids[names.indexOf(name)] + "/statuses?limit=1000&fields=likes.limit(1000)"), function(response) {
+        var comment = new Array();
+        likecount = new Array();
+        for (var i = 0; i < response.data.length; i++) {
+          if (response.data[i]['likes'] != null) {
+            comment[i] = response.data[i]['likes']['data']; // returns the data array containing likes
+            for (var j = 0; j < comment[i].length; j++) {
+              var dudename = comment[i][j]['name'];
+              if (dudename != name) {
+                var index = getIndex(likecount, dudename);
+                if (index == -1) {
+                  likecount.push(new Array(dudename, 1));
+                } else {
+                  likecount[index][1]++;
+                }
+              }
+            }
+          }
+        }
+
+        likecount.sort((function(index){
+          return function(a, b) {
+            return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+          };
+        })(1));
+		/*
+		
+		#####MOST LIKES#####
+		
+		*/
+         for (var i = 0; i < likecount.length; i++) {
+           document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
+         }
+
+        function getIndex(likecount, dudename) {
+          for (var i = 0; i < likecount.length; i++) {
+            if (likecount[i][0] == dudename) {
+              return i;
+            }
+          }
+          return -1;
+        }
+
+       // var total;
+       console.log(likecount);
+       console.log(commentnames);
+       var total = likecount.slice();
+       for (var i = 0; i < commentnames.length; i++) {
+          var found = false;
+        for (var j = 0; j < likecount.length; j++) {
+          if (total[j][0] == commentnames[i][0]) {
+            found = true;
+            total[j][1] = total[j][1] * 1.5 + commentnames[i][1];
+            break;
+          }
+        }
+        if (!found) {
+          total.push(commentnames[i]);
+        }
+       }
+      total.sort((function(index){
+          return function(a, b) {
+            return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+          };
+        })(1));
+		/*
+		
+		#####TOP FRIENDS#####
+		
+		*/
+       for (var i = 0; i < total.length; i++)
+       document.getElementById('demo5').innerHTML+=(total[i] + '<br />');
+       //for (var i = 0; i < likecount.length)
+       // getTotal(commentnames, likecount);
+        function getTotal (commentnames, likecount) {
+          console.log(likecount);
+          var total = likecount.slice();
+          console.log(total);
+          for (var j = 0; j < commentnames.length; j++) {
+            var sc = commentnames[j][0];
+            var indezz = getIndex(total, sc);
+            console.log(indezz);
+            if (indezz != -1) {
+              total[indezz][1] = ((total[indezz][1] * 1.53278) + commentnames[j][1]);
+            } else {
+              total.push(commentnames[i]);
+            }
+          }
+          for (var i = 0; i < total.length; i++) {
+            document.getElementById('demo5').innerHTML+=(total[i].toString() + '<br />');            
+          }
+        }
+    });
+    });
+
 		// getStatuses();
 	});
+	
+	});
+	
 	} else {
+			/*
+			
+			#####DISPLAY IF NOT LOGGED IN TO FACEBOOK YET#####
+			
+			*/
+		  var ids = new Array();
+		  $(function() {
+			FB.api('/me/friends', function(response) {
+				var availableTags = new Array(); 
+				var ids = new Array();
+				for (var i = 0; i < response.data.length; i++) {
+					availableTags[i] = response.data[i]['name'];
+				}
+				availableTags.sort();
+				$( "#tags" ).autocomplete({
+				  source: availableTags
+				});
+			});
+		  });
 		console.log("no parameter passed");
 	}
   };
   
-    var gg;
-  function getStatuses() {
-  	FB.api((id + "/statuses"), function(response) {
-		console.log(id);
-		console.log(response);
-		console.log(id + '/statuses/');
-		gg = new Array();
-  		// for (var i = 0; i < response.data.length; i++) {
-  		// 	statuses[i] = response.data['message'];
-  		// }
-  		// for (var i = 0; i < response.data.length; i++) {
-  		// 	likeCount[i] = response.data['likes']['data'].length;
-  		// }
-  		for (var i = 0; i < 1; i++) {
-  			gg[i] = {message: response.data['message'], likes: response.data['likes']['data'].length};
-			/*
-  			document.getElementbyId("demo2").innerHTML+=(gg[i].message);
-  			document.getElementbyId("demo4").innerHTML+=(gg[i].likes);
-			*/
-  			document.write(gg[i].message);
-  			document.write(gg[i].likes);
-  		}
-  		gg.sort(function (a, b) {
-  			if (a.likes > b.likes) {
-  				return 1;
-  			} else if (a.likes < b.likes) {
-  				return -1;
-  			} else {
-  				return 0;
-  			}
-  		});
-  	});
-  }
-  
   function printNames() {
-  var ids = new Array();
-  $(function() {
-	FB.api('/me/friends', function(response) {
-		/*
-		var text = '<form action="https://webster.cs.washington.edu/params.php"><select name="name">';
-		for (var i = 0; i < response.data.length; i++) {
-			text += ('<option>' + response.data[i]['name'] + '<img src="https://graph.facebook.com/' + response.data[i]['id'] + '/picture" alt="pic" /></option>');
-		}
-		document.getElementById("text").innerHTML = (text + '</select><input type="submit" value="Go" /></form>');
-		*/
-		var availableTags = new Array(); 
-		var ids = new Array();
-		for (var i = 0; i < response.data.length; i++) {
-			availableTags[i] = response.data[i]['name'];
-			ids[i] = response.data[i]['id'];
-			/*
-			document.getElementById("text").innerHTML += (response.data[i]['name'] + '<img src="https://graph.facebook.com/' + response.data[i]['id'] + '/picture" alt="pic" /><br />');
-			*/
-			availableTags.sort();
-			$( "#tags" ).autocomplete({
-			  source: availableTags
-			});
-		}
-	});
-  });
+
 	
   }
 };
-
-	var id;
-	function getID (input, names, ids) {
-		var index;
-	    	for(var i = 0; i < names.length; i++) {
-		  	var lower = names[i].toLowerCase();
-		  	if (lower == input) {
-		  		index = i;	 
-		  	}
-	  	}
-	  	id = ids[index];
-	}
 
   // Load the SDK asynchronously
   (function(d){
@@ -251,21 +360,25 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   <!-- Begin page content -->
   <div class="container">
     <div class="page-header">
-      <h1>Name</h1>
+      <h1 id="name"></h1>
     </div>
-    <p class="lead" id="images"></p>
     <p id="text"></p>
     <div class="ui-widget" id="test">
     <form action="">
-  		<label for="tags">Search: </label>
+  		<label for="tags">Search Friends: </label>
   		<input id="tags" name="name" />
         <input type="submit" />
         </form>
+    <p id="invalid"></p>
 	</div>
-    <p>Use <a href="./sticky-footer-navbar.html">the sticky footer</a> with a fixed navbar if need be, too.</p>
-	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status" width="300" max-rows="1"></fb:login-button></p>
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status" width="300" max-rows="1"></fb:login-button></p>
+    <p id="images"></p>
+    <p id="relationship"></p>
 	<p id="demo2"></p>
 	<p id="demo4"></p>
+    <p id="demo3"></p>
+    <p id="demo6"></p>
+    <p id="demo5"></p>
   </div>
 
   <div id="push"></div>
