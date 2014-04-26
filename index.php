@@ -1,18 +1,16 @@
 <html>
 <head>
-	<title>Test App</title>
-        <!-- CSS -->
+    <title>Test App</title>
+    <!-- CSS / JS imports  -->
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
-	<link href="index.css" rel="stylesheet" type="text/css" />
-	<script src="toggle.js" type="text/javascript"></script>
-    
-    <link href="css/style.css" rel="stylesheet" type="text/css">
     <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
-  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-  
+    
+    <script src="css/toggle.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 </head>
+
 <body>
 <div id="fb-root"></div>
 <script>
