@@ -181,17 +181,17 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   var index; // index of name in name array
   var id; // id #
   function getName() {
-  	var userInput = document.getElementById("tags");
+  	var userInput = document.getElementById("tags").name;
   	if (userInput == null) {
   		console.log("doesnt work");
   	} else {
   		console.log("it works");
   	}
   	document.getElementbyId("demo").innerHTML=(userInput);
-  	userinput = userinput.toLowerCase();
+  	userInput = userInput.toLowerCase();
   	for(var i = 0; i < names.length; i++) {
   		var lower = names[i].toLowerCase();
-  		if (lower == userinput) {
+  		if (lower == userInput) {
   			index = i;	 
   		}
   	}
