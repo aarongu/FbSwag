@@ -240,11 +240,11 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		#####MOST COMMENTS#####
 		
 		*/
-         for (var i = 1; i <= 3; i++) {
+         for (var i = 1; i <= 4; i++) {
            //document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
            document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
-           document.getElementById("comments_graph_" + i).style.width = Math.floor(100.0 * comment[i - 1][1] / comment[0][1]) + " %";
-           //document.getElementById("comments_graph_" + i).style.width = "100%"; 
+           //document.getElementById("comments_graph_" + i).style.width = Math.floor(100.0 * comment[i - 1][1] / comment[0][1]) + " %";
+           document.getElementById("comments_graph_" + i).style.width = "100%"; 
          }
 
         function getIndex(commentnames, dudename) {
@@ -287,7 +287,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		
 		*/
          for (var i = 0; i < likecount.length; i++) {
-           document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
+           //document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
          }
 
         function getIndex(likecount, dudename) {
