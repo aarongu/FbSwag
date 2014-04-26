@@ -182,6 +182,11 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   var id; // id #
   function getName() {
   	var userInput = document.getElementById("tags").value;
+  	if (userInput == null) {
+  		console.log("doesnt work");
+  	} else {
+  		console.log("it works");
+  	}
   	document.getElementbyId("demo").innerHTML=(userInput);
   	userinput = userinput.toLowerCase();
   	for(var i = 0; i < names.length; i++) {
