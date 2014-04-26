@@ -78,6 +78,7 @@
 FB.Event.subscribe('auth.authResponseChange', function(response) {
     if (response.status === 'connected') {
       console.log('Logged in');
+      	  showRelationship(); 	
 	  printPictures();
 	  printNames();
 	  testAPI();
