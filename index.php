@@ -587,46 +587,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     
 <!--/col-->
 
-  <div class="row">
-      <h2>Closest Friends</h2>
-  
-     <div class="col-sm-4 col-xs-6">
-      
-        <div class="panel panel-default">
-          <div class="panel-thumbnail"><img id="friend_1" src="" class="img-responsive"></div>
-          <div class="panel-body">
-            <p class="lead">Name</p>
 
-          </div>
-        </div>
-
-        
-      </div><!--/col-->
-      
-      <div class="col-sm-4 col-xs-6">
-      
-        <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="//placehold.it/450X300/DD66DD/FFF" class="img-responsive"></div>
-          <div class="panel-body">
-            <p class="lead">Name</p>
-          </div>
-        </div>
-
-        
-      </div><!--/col-->
-      
-      <div class="col-sm-4 col-xs-6">
-      
-        <div class="panel panel-default">
-          <div class="panel-thumbnail"><img src="//placehold.it/450X300/2222DD/FFF" class="img-responsive"></div>
-          <div class="panel-body">
-            <p class="lead">Name</p>
-          </div>
-        </div>
-
-      
-      </div>
-  </div> 
 <hr>  
     <div class="row">
       <div class="col-md-12"><h2>Graphs</h2></div>
