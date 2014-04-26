@@ -140,7 +140,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		});
         
         FB.api((id + '/interests'), function(response) {
-			for (var i = 0; i < min(response.data.length, 3); i++) {
+			for (var i = 0; i < Math.min(response.data.length, 3); i++) {
 				document.getElementById('interest_' + i + 1).innerHTML+=response.data[i]['name'];
 			}
         });
@@ -261,8 +261,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
            document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
            console.log(commentnames[i - 1][1]);
            console.log(commentnames[0][1]);
-           console.log(parseInt(100.0 * commentnames[i - 1][1] / commentnames[0][1], 10)); 
-           document.getElementById("comments_graph_" + i).style.width = parseInt(100.0 * commentnames[i - 1][1] / commentnames[0][1], 10) + " %";
+           var num = parseInt(100.0 * commentnames[i - 1][1] / commentnames[0][1], 10) + "%";
+           console.log(num);
+           document.getElementById("comments_graph_" + i).style.width = num;
            
            
            //document.getElementById("comments_graph_" + i).style.width = "100%"; 
@@ -633,19 +634,19 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <div class="panel panel-default">
            <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Comments by Friend</h4></div>
         <div class="panel-body">
-              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_1"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-info" id="comments_graph_1" style="" title="Stuff"></div>
               </div>
-              <span class = "bar_names" id="comments_graph_name_2"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_2"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-success" id="comments_graph_2" style="" title="stuff 2"></div>
               </div>
-              <span class = "bar_names" id="comments_graph_name_3"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_3"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-warning" id="comments_graph_3" style="" title="stuff 3"></div>
               </div>
-              <span class = "bar_names" id="comments_graph_name_4"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_4"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-danger" id="comments_graph_4" style="" stuff="stuff4"></div>
               </div>
@@ -660,19 +661,19 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <div class="panel panel-default">
            <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Likes by Friends</h4></div>
         <div class="panel-body">
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
               </div>
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
               </div>
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
               </div>
-              <span class = "bar_names"> POOP </span>
+              <span class = "bar_names"> NAME </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
               </div>
