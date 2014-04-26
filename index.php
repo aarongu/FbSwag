@@ -121,7 +121,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   };
   
   var gg;
-  function getStatuses {
+  function getStatuses() {
   	FB.api(id + '/statuses', function(response) {
 		gg = new Array();
   		// for (var i = 0; i < response.data.length; i++) {
