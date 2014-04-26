@@ -1,4 +1,4 @@
- FB.api((ids[names.indexOf(name)] + "/statuses?limit=1000&fields=comments.limit(1000),from"), function(response) {
+FB.api((ids[names.indexOf(name)] + "/statuses?limit=1000&fields=comments.limit(1000),from"), function(response) {
         var comment = new Array();
         commentnames = new Array();
         for (var i = 0; i < response.data.length; i++) {
@@ -99,3 +99,25 @@
         })(1));
        for (var i = 0; i < total.length; i++)
        document.getElementById('demo5').innerHTML+=(total[i] + '<br />');
+       //for (var i = 0; i < likecount.length)
+       // getTotal(commentnames, likecount);
+        function getTotal (commentnames, likecount) {
+          console.log(likecount);
+          var total = likecount.slice();
+          console.log(total);
+          for (var j = 0; j < commentnames.length; j++) {
+            var sc = commentnames[j][0];
+            var indezz = getIndex(total, sc);
+            console.log(indezz);
+            if (indezz != -1) {
+              total[indezz][1] = ((total[indezz][1] * 1.53278) + commentnames[j][1]);
+            } else {
+              total.push(commentnames[i]);
+            }
+          }
+          for (var i = 0; i < total.length; i++) {
+            document.getElementById('demo5').innerHTML+=(total[i].toString() + '<br />');            
+          }
+        }
+    });
+    });
