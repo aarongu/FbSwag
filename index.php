@@ -369,6 +369,18 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 
 <div class="jumbotron hero-spacer">
     <div id="poop">
+    
+    <div class="ui-widget" id="test">
+    <form action="">
+  		<label for="tags">Search Friends: </label>
+  		<input id="tags" name="name" />
+        <input type="submit" />
+        </form>
+    <p id="invalid"></p>
+	</div>
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status" width="300" max-rows="1"></fb:login-button></p>
+    
+    
   <img src ="http://i.imgur.com/Kf0Papj.png" alt="pic">
 </div>
   <h1 id="current_name"> Aaron Gupta</h1>
