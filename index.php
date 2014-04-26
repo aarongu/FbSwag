@@ -228,9 +228,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   		<label for="tags">Search: </label>
   		<input id="tags" name="name" id="personname" />
   		<p id="relationship" name="status">Relationship Status: </p>
+  		<button onclick="getName()">Submit</button>
         <!--<input type="submit" />-->
         </form>
-        <button onclick="getName()">Submit</button>
         <p id="demo"></p>
         <p id="demo2"></p>
         <p id="demo4"></p>
