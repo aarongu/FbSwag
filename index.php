@@ -182,10 +182,10 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 };
 	var index;
 	var id;
-	function getID (var input) {
+	function getID (input) {
 	    	for(var i = 0; i < names.length; i++) {
 		  	var lower = names[i].toLowerCase();
-		  	if (lower == userInput) {
+		  	if (lower == input) {
 		  		index = i;	 
 		  	}
 	  	}
