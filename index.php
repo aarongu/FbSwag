@@ -1,19 +1,22 @@
 <html>
 <head>
-    <title>Test App</title>
+	<title>Test App</title>
     <!-- CSS / JS imports  -->
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-    
-    <script src="css/toggle.js" type="text/javascript"></script>
+
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="css/toggle.js" type="text/javascript"></script>
 </head>
 
 <body>
 <div id="fb-root"></div>
-<script>
+
+
+
+<script> 
 var name;
   window.fbAsyncInit = function() {
   FB.init({
@@ -43,11 +46,14 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 	document.getElementById("name").innerHTML=name;
 	console.log("name: " + name);
     
-    
-    // INSERTION
+    ///////////////
+    // INSERTION //
+    //////////////
     var current_name = document.getElementById("current_name");
     current_name.innerHTML = name; 
-    
+    ///////////////
+    // INSERTION //
+    //////////////
     
     
     
@@ -83,13 +89,15 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		FB.api((id + '?fields=relationship_status,significant_other'), function(response) {
 			if (response['relationship_status'] != null) {
 				var status = response['relationship_status'];
+                
+                
 				var so;
 				if (response['significant_other'] != null)
 					so = response['significant_other'].name;
 				var connector;
 				var to;
 				if (so != null) {
-					if (status == "Married" || status == "Widowed" || status == "Separated" || status == "Divoreced")
+					if (status == "Married" || status == "Widowed" || status == "Separated" || status == "Divorced")
 						connector = "to";
 					else
 						connector = "with";
@@ -116,6 +124,18 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			
 			*/
 			document.getElementById("relationship").innerHTML=string + '.';
+            
+            ///////////////
+            // INSERTION //
+            //////////////
+            var relationship_status = document.getElementById("relationship_status");
+            relationship_status.innerHTML += string;
+            ///////////////
+            // INSERTION //
+            //////////////
+            
+            
+            
 		});
 		console.log(id);
 		FB.api((id + "/photos?limit=10000&fields=likes.limit(1000),source"), function(response) {
@@ -369,21 +389,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 
 <div class="jumbotron hero-spacer">
     <div id="poop">
-    
-    <div class="ui-widget" id="test">
-    <form action="">
-  		<label for="tags">Search Friends: </label>
-  		<input id="tags" name="name" />
-        <input type="submit" />
-        </form>
-    <p id="invalid"></p>
-	</div>
-	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status" width="300" max-rows="1"></fb:login-button></p>
-    
-    
   <img src ="http://i.imgur.com/Kf0Papj.png" alt="pic">
 </div>
-  <h1 id="current_name"> Aaron Gupta</h1>
+  <h1 id="current_name"></h1>
 </div>
 
   
@@ -410,9 +418,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
          
 
          <div class="panel panel-default">
-           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Relationship Status</h4></div>
+           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Relationship Status: </h4></div>
         <div class="panel-body">
-              <p><img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" class="img-circle pull-right"> <a href="#">YES</a></p>
+              <p><img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" class="img-circle pull-right"> <a href="#" id="relationship_status"></a></p>
               <div class="clearfix"></div>
               <hr>
              
