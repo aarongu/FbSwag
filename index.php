@@ -108,10 +108,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			names[i] = response.data[i]['name'];
 			ids[i] = response.data[i]['id'];
 		}
-		FB.api(ids[i] + '/photos', function(response) {
-			var pictures = new Array();
+		FB.api(ids[1] + '/photos', function(response) {
 			for (var i = 0; i < 5; i++) {
-				pictures[i] = response.data[i]['source'];
 				console.log(response.data[i]['source']);
 				document.getElementById('images').innerHTML += ('<img src="' + response.data[i]['source'] + '" alt="image" />');
 			}
