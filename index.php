@@ -229,7 +229,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     <p class="lead" id="images"></p>
     <p id="text"></p>
     <div class="ui-widget">
-    <form>
+    <form action="http://webster.cs.washington.edu/params.php">
   		<label for="tags">Search: </label>
   		<input id="tags" name="name" />
   		<p id="relationship" name="status">Relationship Status: </p>
