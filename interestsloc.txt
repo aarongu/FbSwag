@@ -1,0 +1,9 @@
+		FB.api((id + '/interests'), function(response) {
+			for (var i = 0; i < min(response.data.length, 3); i++) {
+				document.getElementById('id').innerHTML+=response.data[i]['name'];
+			}
+		});
+		
+		FB.api((id + '?fields=location'), function(response) {
+			document.getElementById('id').innerHTML=response['location']['name'];
+		});
