@@ -1,0 +1,40 @@
+FB.api((ids[names.indexOf(name)] + "/statuses?limit=1000&fields=comments.limit(1000),from"), function(response) {
+        var comment = new Array();
+        var commentnames = new Array();
+        for (var i = 0; i < response.data.length; i++) {
+
+          if (response.data[i]['comments'] != null) {
+            comment[i] = response.data[i]['comments']['data']; // returns the data array containing comments
+            for (var j = 0; j < comment[i].length; j++) {
+              var dudename = comment[i][j]['from']['name'];
+              if (dudename != name) {
+                var index = getIndex(commentnames, dudename);
+                if (index == -1) {
+                  commentnames.push(new Array(dudename, 1));
+                } else {
+                  commentnames[index][1]++;
+                }
+              }
+            }
+            console.log(comment[i].length);
+          }
+        }
+
+        commentnames.sort((function(index){
+          return function(a, b) {
+            return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+          };
+        })(1));
+        for (var i = 0; i < commentnames.length; i++) {
+          document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
+        }
+
+        function getIndex(commentnames, dudename) {
+          for (var i = 0; i < commentnames.length; i++) {
+            if (commentnames[i][0] == dudename) {
+              return i;
+            }
+          }
+          return -1;
+        }
+    });
