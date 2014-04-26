@@ -58,6 +58,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     
     
     
+    
 	FB.api('me?fields=name,id', function(response) {
 		var me = response['name'];
 		var meId = response['id'];
@@ -137,6 +138,21 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
             
             
 		});
+        
+        FB.api((id + '/interests'), function(response) {
+			for (var i = 0; i < min(response.data.length, 3); i++) {
+				document.getElementById('interest_' + i + 1).innerHTML+=response.data[i]['name'];
+			}
+        });
+    
+        FB.api((id + '?fields=location'), function(response) {
+            if (response['location'] != null)
+                document.getElementById('location').innerHTML=response['location']['name'];
+            else
+                document.getElementById('location').innerHTML="No Location Data";
+        });
+    
+        
 		console.log(id);
 		FB.api((id + "/photos?limit=10000&fields=likes.limit(1000),source"), function(response) {
 			var pictures = new Array();
@@ -245,6 +261,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
            document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
            console.log(commentnames[i - 1][1]);
            console.log(commentnames[0][1]);
+           console.log(parseInt(100.0 * commentnames[i - 1][1] / commentnames[0][1], 10)); 
            document.getElementById("comments_graph_" + i).style.width = parseInt(100.0 * commentnames[i - 1][1] / commentnames[0][1], 10) + " %";
            
            
@@ -443,9 +460,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Interests</h4></div>
         <div class="panel-body">
               <div class="list-group"> 
-                <a href="#" class="list-group-item">sleeping </a>
-                <a href="#" class="list-group-item">books </a>
-                <a href="#" class="list-group-item">swag</a>
+                <a href="#" class="list-group-item" id="interest_1"></a>
+                <a href="#" class="list-group-item" id="interest_2"></a>
+                <a href="#" class="list-group-item" id="interest_3"></a>
               </div>
             </div>
       </div>
@@ -474,7 +491,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
            <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Recent Location</h4></div>
         <div class="panel-body">
               <ul class="list-group">
-              <li class="list-group-item">somewhere</li>
+              <li class="list-group-item" id="location"></li>
               </ul>
             </div>
       </div>
