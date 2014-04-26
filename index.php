@@ -132,8 +132,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   		// }
   		for (var i = 0; i < response.data.length; i++) {
   			gg[i] = {message: response.data['message'], likes: response.data['likes']['data'].length};
-  			document.write(gg[i].message);
-  			document.write(gg[i].likes);
+  			document.getElementbyId("demo2").innerHTML+=(gg[i].message);
+  			document.getElementbyId("demo4").innerHTML+=(gg[i].likes);
   		}
   		gg.sort(function (a, b) {
   			if (a.likes > b.likes) {
@@ -180,7 +180,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   var id; // id #
   function getName() {
   	var userInput = document.getElementById("personname").value;
-  	document.write(userInput);
+  	document.getElementbyId("demo").innerHTML=(userInput);
   	userinput = userinput.toLowerCase();
   	for(var i = 0; i < names.length; i++) {
   		var lower = names[i].toLowerCase();
@@ -224,13 +224,16 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     <p class="lead" id="images"></p>
     <p id="text"></p>
     <div class="ui-widget">
-    <form action="//webster.cs.washington.edu/params.php">
+    <form>
   		<label for="tags">Search: </label>
   		<input id="tags" name="name" id="personname" />
   		<p id="relationship" name="status">Relationship Status: </p>
         <!--<input type="submit" />-->
     	<button onclick="getName()">Submit</button>
         </form>
+        <p id="demo"></p>
+        <p id="demo2"></p>
+        <p id="demo4"></p>
 	</div>
     <p>Use <a href="./sticky-footer-navbar.html">the sticky footer</a> with a fixed navbar if need be, too.</p>
 	<p class="muted credit"><fb:login-button show-faces="true" width="300" max-rows="1"></fb:login-button></p>
