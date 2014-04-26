@@ -141,7 +141,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
         
         FB.api((id + '/likes'), function(response) {
 			for (var i = 0; i < Math.min(response.data.length, 3); i++) {
-				document.getElementById('interest_' + i + 1).innerHTML+=response.data[i]['name'];
+				document.getElementById('interest_' + (i + 1)).innerHTML+=response.data[i]['name'];
 			}
         });
     
@@ -352,29 +352,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 		#####TOP FRIENDS#####
 		
 		*/
-       for (var i = 0; i < total.length; i++)
-       document.getElementById('demo5').innerHTML+=(total[i] + '<br />');
-       //for (var i = 0; i < likecount.length)
-       // getTotal(commentnames, likecount);
-        function getTotal (commentnames, likecount) {
-          console.log(likecount);
-          var total = likecount.slice();
-          console.log(total);
-          for (var j = 0; j < commentnames.length; j++) {
-            var sc = commentnames[j][0];
-            var indezz = getIndex(total, sc);
-            console.log(indezz);
-            if (indezz != -1) {
-              total[indezz][1] = ((total[indezz][1] * 1.53278) + commentnames[j][1]);
-            } else {
-              total.push(commentnames[i]);
-            }
-          }
-          for (var i = 0; i < total.length; i++) {
-            document.getElementById('demo5').innerHTML+=(total[i].toString() + '<br />');
-            
-          }
-        }
+       
     });
     });
 
@@ -597,7 +575,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 
                <div class="col-md-6 col-sm-6">
       <div class="panel panel-default">
-           <!--<div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Comments by Friend</h4></div>-->
+           <div class="panel-heading"><a href="" class="pull-right"></a> <h4>Most Comments by Friend</h4></div>
         <div class="panel-body">
               <span class = "bar_names" id="comments_graph_name_1"> NAME </span>
               <div class="progress">
@@ -624,7 +602,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
                         
  <div class="col-md-6 col-sm-6">
       <div class="panel panel-default">
-           <!--<div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Likes by Friends</h4></div>-->
+           <<div class="panel-heading"><a href="" class="pull-right"></a> <h4>Most Likes by Friends</h4></div>
         <div class="panel-body">
               <span class = "bar_names" id="likes_graph_name_1"> NAME </span>
               <div class="progress">
