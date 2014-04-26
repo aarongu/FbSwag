@@ -97,8 +97,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   		
   		var p = document.getElementById("relationship"); 
   		p.innerHTML = "Relatinship Status";
-  	}
-  }
+  	};
+  };
   
   function printPictures() {
 	FB.api('me/friends', function(response) {
