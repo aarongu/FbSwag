@@ -488,7 +488,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <hr>
   
   <div class="row">
-      <h2> Top 3 Pictures Based on # of Likes</h2>
+      <h2>Most Popular Pictures</h2>
   
      <div class="col-sm-4 col-xs-6">
       
