@@ -78,7 +78,6 @@
 FB.Event.subscribe('auth.authResponseChange', function(response) {
     if (response.status === 'connected') {
       console.log('Logged in');
-      	  showRelationship(); 	
 	  printPictures();
 	  printNames();
 	  testAPI();
@@ -96,33 +95,39 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   			ids[i] = response.data[i]['id'];
   		}
   		
-  		FB.api((ids[1] + '?fields=relationship_status'), function(response) {
-  			var p = document.getElementById("relationship"); 
-  			p.innerHTML = "Relatinship Status: " + response.data[0]['relationship_status'];
-  		});
-  		
-  		
-  	});
-  };
+  		var p = document.getElementById("relationship"); 
+  		p.innerHTML = "Relatinship Status";
+  	}
+  }
   
+  var ids;
+  var names;
   function printPictures() {
 	FB.api('me/friends', function(response) {
-		var names = new Array();
-		var ids = new Array();
+		names = new Array();
+		ids = new Array();
 		for (var i = 0; i < response.data.length; i++) {
 			names[i] = response.data[i]['name'];
 			ids[i] = response.data[i]['id'];
 		}
-		console.log(ids[1]);
-		FB.api((ids[1] + '/photos'), function(response) {
-			var pictures = new Array();
-			console.log(response);
+		FB.api(ids[1] + '/photos', function(response) {
 			for (var i = 0; i < 5; i++) {
+				console.log(response.data[i]['source']);
 				document.getElementById('images').innerHTML += ('<img src="' + response.data[i]['source'] + '" alt="image" />');
 			}
 		});
 	});
   };
+  
+  function getStatuses {
+  	FB.api(id + '/statuses', function(response) {
+  		var statuses = new Array();
+  		var map = new Object();
+  		for (var i = 0; i < response.data.length; i++) {
+  			statuses[i] = response.data['message'];
+  		}
+  	}
+  }
   
   function printNames() {
   var ids = new Array();
@@ -152,6 +157,23 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   });
 	
   }
+  
+  var index; // index of name in name array
+  var id; // id #
+  function getName() {
+  	var userInput = document.getElementById("personname").value;
+  	document.write(userInput);
+  	userinput = userinput.toLowerCase();
+  	for(var i = 0; i < names.length; i++) {
+  		var lower = names[i].toLowerCase();
+  		if (lower == userinput) {
+  			index = i;	 
+  		}
+  	}
+  	id = ids[index];
+  }
+  
+  function getComm
 };
 
   // Load the SDK asynchronously
@@ -187,9 +209,10 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     <div class="ui-widget">
     <form action="//webster.cs.washington.edu/params.php">
   		<label for="tags">Search: </label>
-  		<input id="tags" name="name" />
-  		<p id="relationship" name="status"></p>
-        <input type="submit" />
+  		<input id="tags" name="name" id="personname" />
+  		<p id="relationship" name="status">Relationship Status: </p>
+        <!--<input type="submit" />-->
+    	<button onclick="getName()">Submit</button>
         </form>
 	</div>
     <p>Use <a href="./sticky-footer-navbar.html">the sticky footer</a> with a fixed navbar if need be, too.</p>
