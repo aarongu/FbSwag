@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>Test App</title>
+	<title>Quick View</title>
     <!-- CSS / JS imports  -->
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
     <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
