@@ -243,7 +243,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
          for (var i = 1; i <= 3; i++) {
            //document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
            document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
-           document.getELementById("comments_graph_" + i).style.width = int(100.0 * comment[i - 1][1] / comment[0][1]) + "%"; 
+           //document.getELementById("comments_graph_" + i).style.width = int(100.0 * comment[i - 1][1] / comment[0][1]) + "%";
+           document.getELementById("comments_graph_" + i).style.width = "100%"; 
          }
 
         function getIndex(commentnames, dudename) {
@@ -615,15 +616,15 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
               <div class="progress">
                 <div class="progress-bar progress-bar-info" id="comments_graph_1" style="" title="Stuff"></div>
               </div>
-              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_2"> POOP </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-success" id="comments_graph_2" style="" title="stuff 2"></div>
               </div>
-              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_3"> POOP </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-warning" id="comments_graph_3" style="" title="stuff 3"></div>
               </div>
-              <span class = "bar_names" id="comments_graph_name_1"> POOP </span>
+              <span class = "bar_names" id="comments_graph_name_4"> POOP </span>
               <div class="progress">
                 <div class="progress-bar progress-bar-danger" id="comments_graph_4" style="" stuff="stuff4"></div>
               </div>
