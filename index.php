@@ -42,6 +42,16 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 	name = name.replace(/\+/g, " ");
 	document.getElementById("name").innerHTML=name;
 	console.log("name: " + name);
+    
+    
+    // INSERTION
+    var current_name = document.getElementById("current_name");
+    current_name.innerHTML = name; 
+    
+    
+    
+    
+    
 	FB.api('me?fields=name,id', function(response) {
 		var me = response['name'];
 		var meId = response['id'];
@@ -352,43 +362,258 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     });
   }
 </script>
-<!--
-  Below we include the Login Button social plugin. This button uses the JavaScript SDK to
-  present a graphical Login button that triggers the FB.login() function when clicked. --><!-- Part 1: Wrap all page content here -->
-<div id="wrap">
 
-  <!-- Begin page content -->
-  <div class="container">
-    <div class="page-header">
-      <h1 id="name"></h1>
+
+<!-- WHERE THE HTML STARTS OMGGG -->
+
+
+<div class="jumbotron hero-spacer">
+    <div id="poop">
+  <img src ="http://i.imgur.com/Kf0Papj.png" alt="pic">
+</div>
+  <h1 id="current_name"> Aaron Gupta</h1>
+</div>
+
+  
+<!--main-->
+<div class="container" id="main">
+   <div class="row">
+   <div class="col-md-4 col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Interests</h4></div>
+        <div class="panel-body">
+              <div class="list-group"> 
+                <a href="#" class="list-group-item">sleeping </a>
+                <a href="#" class="list-group-item">books </a>
+                <a href="#" class="list-group-item">swag</a>
+              </div>
+            </div>
+      </div>
+
+     
+ 
+
+  </div>
+    <div class="col-md-4 col-sm-6">
+         
+
+         <div class="panel panel-default">
+           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Relationship Status</h4></div>
+        <div class="panel-body">
+              <p><img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" class="img-circle pull-right"> <a href="#">YES</a></p>
+              <div class="clearfix"></div>
+              <hr>
+             
+            </div>
+         </div>
+      
+
     </div>
-    <p id="text"></p>
-    <div class="ui-widget" id="test">
-    <form action="">
-  		<label for="tags">Search Friends: </label>
-  		<input id="tags" name="name" />
-        <input type="submit" />
-        </form>
-    <p id="invalid"></p>
-	</div>
-	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, user_photos, user_status" width="300" max-rows="1"></fb:login-button></p>
-    <p id="images"></p>
-    <p id="relationship"></p>
-	<p id="demo2"></p>
-	<p id="demo4"></p>
-    <p id="demo3"></p>
-    <p id="demo6"></p>
-    <p id="demo5"></p>
+    <div class="col-md-4 col-sm-6">
+         <div class="panel panel-default">
+           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Recent Location</h4></div>
+        <div class="panel-body">
+              <ul class="list-group">
+              <li class="list-group-item">somewhere</li>
+              </ul>
+            </div>
+      </div>
+      
+    </div>
+  </div><!--/row-->
+      <hr>
+  
+  <div class="row">
+      <h2> Top 3 Pictures Based on # of Likes &amp; Comments</h2>
+  
+     <div class="col-sm-4 col-xs-6">
+      
+        <div class="panel panel-default">
+          <div class="panel-thumbnail"><img src="/assets/example/bg_suburb.jpg" class="img-responsive"></div>
+          <div class="panel-body">
+            <p class="lead">NAME</p>
+
+          </div>
+        </div>
+
+        
+      </div><!--/col-->
+      
+      <div class="col-sm-4 col-xs-6">
+      
+        <div class="panel panel-default">
+          <div class="panel-thumbnail"><img src="//placehold.it/450X300/DD66DD/FFF" class="img-responsive"></div>
+          <div class="panel-body">
+            <p class="lead">NAME</p>
+          </div>
+        </div>
+
+        
+      </div><!--/col-->
+      
+      <div class="col-sm-4 col-xs-6">
+      
+        <div class="panel panel-default">
+          <div class="panel-thumbnail"><img src="//placehold.it/450X300/2222DD/FFF" class="img-responsive"></div>
+          <div class="panel-body">
+            <p class="lead">NAME</p>
+          </div>
+        </div>
+
+      
+      </div>
+  </div>
+<hr>
+  
+  <div class="row">
+    <div class="col-md-12"><h2>Most Liked Posts</h2></div>
+    <div class="col-md-4 col-sm-6">
+      <div class="panel panel-default">
+           <div class="panel-heading"> <h4>Persons Name</h4></div>
+        <div class="panel-body">
+              <div class="clearfix"></div>
+              <p>Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
+              Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrapis intended to help 2.x developers transition to 3.
+              </p>
+              
+            </div>
+         </div> 
+    </div>
+    
+        <div class="col-md-4 col-sm-6">
+      <div class="panel panel-default">
+           <div class="panel-heading"> <h4>Persons Name</h4></div>
+        <div class="panel-body">
+              <div class="clearfix"></div>
+              <p>Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
+              Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrap 2.is intended to help 2.x developers transition to 3.
+              </p>
+              
+            </div>
+         </div> 
+    </div>
+    
+        <div class="col-md-4 col-sm-6">
+      <div class="panel panel-default">
+           <div class="panel-heading"> <h4>Persons Name</h4></div>
+        <div class="panel-body">
+              <div class="clearfix"></div>
+              <p>Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
+              Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrap 2.x.  is intended to help 2.x developers transition to 3.
+              </p>
+              
+            </div>
+         </div> 
+    </div>
   </div>
 
-  <div id="push"></div>
-</div>
+<hr>    
+    
+<!--/col-->
+  <div class="row">
+      <h2> Most Liked Pictures</h2>
+  
+     <div class="col-sm-4 col-xs-6">
+      
+        <div class="panel panel-default">
+          <div class="panel-thumbnail"><img src="/assets/example/bg_suburb.jpg" class="img-responsive"></div>
+          <div class="panel-body">
+            <p class="lead">Name</p>
 
-<div id="footer">
-  <div class="container">
+          </div>
+        </div>
+
+        
+      </div><!--/col-->
+      
+      <div class="col-sm-4 col-xs-6">
+      
+        <div class="panel panel-default">
+          <div class="panel-thumbnail"><img src="//placehold.it/450X300/DD66DD/FFF" class="img-responsive"></div>
+          <div class="panel-body">
+            <p class="lead">Name</p>
+          </div>
+        </div>
+
+        
+      </div><!--/col-->
+      
+      <div class="col-sm-4 col-xs-6">
+      
+        <div class="panel panel-default">
+          <div class="panel-thumbnail"><img src="//placehold.it/450X300/2222DD/FFF" class="img-responsive"></div>
+          <div class="panel-body">
+            <p class="lead">Name</p>
+          </div>
+        </div>
+
+      
+      </div>
   </div>
-</div>
-    	
-</div>
+<hr>  
+    <div class="row">
+      <div class="col-md-12"><h2>Graphs</h2></div>
+        <div class="col-md-12">
+
+        </div>
+
+               <div class="col-md-6 col-sm-6">
+      <div class="panel panel-default">
+           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Comments by Friend</h4></div>
+        <div class="panel-body">
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
+              </div>
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
+              </div>
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
+              </div>
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
+              </div>
+              
+            </div>
+         </div> 
+    </div>         
+                        
+                        
+                        
+ <div class="col-md-6 col-sm-6">
+      <div class="panel panel-default">
+           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Likes by Friends</h4></div>
+        <div class="panel-body">
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
+              </div>
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
+              </div>
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
+              </div>
+              <span class = "bar_names"> POOP </span>
+              <div class="progress">
+                <div class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
+              </div>
+              
+            </div>
+         </div> 
+    </div>
+    </div><!--playground-->
+    
+    
+    <div class="clearfix"></div>
+      
+    
+  </div>
 </body>
 </html>
