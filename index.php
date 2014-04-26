@@ -480,9 +480,9 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
          
 
          <div class="panel panel-default">
-           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Relationship Status: </h4></div>
+           <div class="panel-heading"><a href="" class="pull-right">View all</a> <h4>Relationship Status: </h4></div>
         <div class="panel-body">
-              <p><img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" class="img-circle pull-right"> <a href="#" id="relationship_status"></a></p>
+              <p><img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" style="width: 40px" class="img-circle pull-right"> <a href="#" id="relationship_status"></a></p>
               <div class="clearfix"></div>
               <hr>
              
@@ -493,7 +493,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     </div>
     <div class="col-md-4 col-sm-6">
          <div class="panel panel-default">
-           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Recent Location</h4></div>
+           <div class="panel-heading"><a href="" class="pull-right">View all</a> <h4>Most Recent Location</h4></div>
         <div class="panel-body">
               <ul class="list-group">
               <li class="list-group-item" id="location"></li>
@@ -597,7 +597,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 
                <div class="col-md-6 col-sm-6">
       <div class="panel panel-default">
-           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Comments by Friend</h4></div>
+           <!--<div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Comments by Friend</h4></div>-->
         <div class="panel-body">
               <span class = "bar_names" id="comments_graph_name_1"> NAME </span>
               <div class="progress">
@@ -624,7 +624,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
                         
  <div class="col-md-6 col-sm-6">
       <div class="panel panel-default">
-           <div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Likes by Friends</h4></div>
+           <!--<div class="panel-heading"><a href="#" class="pull-right">View all</a> <h4>Most Likes by Friends</h4></div>-->
         <div class="panel-body">
               <span class = "bar_names" id="likes_graph_name_1"> NAME </span>
               <div class="progress">
