@@ -243,7 +243,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
          for (var i = 1; i <= 4; i++) {
            //document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
            document.getElementById("comments_graph_name_" + i).innerHTML = commentnames[i - 1][0];
-           console.log(parseInt(100.0 * comment[i - 1][1] / comment[0][1]));
+           console.log(comment[i - 1][1]);
+           console.log(comment[0][1]);
            document.getElementById("comments_graph_" + i).style.width = parseInt(100.0 * comment[i - 1][1] / comment[0][1]) + " %";
            
            
