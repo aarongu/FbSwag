@@ -178,7 +178,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
                 }
                 
                 current_picture.src = pictures[i][0];
-                current_name.innerHTML = pictures[i][1]; 
+                current_name.innerHTML = pictures[i][1] + " likes"; 
 			}
 
 		});
@@ -202,8 +202,10 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
 				};
 			})(1));
-			for (var i = 0; i < 5/*gg.length*/; i++) {
-				document.getElementById('demo2').innerHTML+=(gg[i][0] + ' Likes: ' + gg[i][1] + '<br />');
+            
+			for (var i = 1; i <= 3; i++) {
+                document.getElementById("status_likes_" + i).innerHTML = gg[i][1] + " likes";
+                document.getElementById("status_" + i).innerHTML = gg[i][0]; 
 			}
 		});
 		
@@ -340,7 +342,8 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
             }
           }
           for (var i = 0; i < total.length; i++) {
-            document.getElementById('demo5').innerHTML+=(total[i].toString() + '<br />');            
+            document.getElementById('demo5').innerHTML+=(total[i].toString() + '<br />');
+            
           }
         }
     });
@@ -474,14 +477,14 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
       <hr>
   
   <div class="row">
-      <h2> Top 3 Pictures Based on # of Likes &amp; Comments</h2>
+      <h2> Top 3 Pictures Based on # of Likes</h2>
   
      <div class="col-sm-4 col-xs-6">
       
         <div class="panel panel-default">
           <div class="panel-thumbnail"><img id="pic_1" src="" class="img-responsive"></div>
           <div class="panel-body">
-            <p class="lead" id="pic_name_1">NAME</p>
+            <p class="lead" id="pic_name_1"></p>
 
           </div>
         </div>
@@ -494,7 +497,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
         <div class="panel panel-default">
           <div class="panel-thumbnail"><img id="pic_2" src="" class="img-responsive"></div>
           <div class="panel-body">
-            <p class="lead" id="pic_name_2">NAME</p>
+            <p class="lead" id="pic_name_2"></p>
           </div>
         </div>
 
@@ -506,7 +509,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
         <div class="panel panel-default">
           <div class="panel-thumbnail"><img id="pic_3" src="" class="img-responsive"></div>
           <div class="panel-body">
-            <p class="lead" id="pic_name_3">NAME</p>
+            <p class="lead" id="pic_name_3"></p>
           </div>
         </div>
 
@@ -519,12 +522,10 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     <div class="col-md-12"><h2>Most Liked Posts</h2></div>
     <div class="col-md-4 col-sm-6">
       <div class="panel panel-default">
-           <div class="panel-heading"> <h4>Persons Name</h4></div>
+           <div class="panel-heading"> <h4 id="status_likes_1"></h4></div>
         <div class="panel-body">
               <div class="clearfix"></div>
-              <p>Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
-              Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrapis intended to help 2.x developers transition to 3.
-              </p>
+              <p id="status_1"></p>
               
             </div>
          </div> 
@@ -532,12 +533,10 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     
         <div class="col-md-4 col-sm-6">
       <div class="panel panel-default">
-           <div class="panel-heading"> <h4>Persons Name</h4></div>
+           <div class="panel-heading"> <h4 id="status_likes_2"></h4></div>
         <div class="panel-body">
               <div class="clearfix"></div>
-              <p>Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
-              Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrap 2.is intended to help 2.x developers transition to 3.
-              </p>
+              <p id="status_2"></p>
               
             </div>
          </div> 
@@ -545,12 +544,10 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     
         <div class="col-md-4 col-sm-6">
       <div class="panel panel-default">
-           <div class="panel-heading"> <h4>Persons Name</h4></div>
+           <div class="panel-heading"> <h4 id="status_likes_3"></h4></div>
         <div class="panel-body">
               <div class="clearfix"></div>
-              <p>Migrating from Bootstrap 2.x to 3 is not a simple matter of swapping out the JS and CSS files.
-              Bootstrap 3 is a major overhaul, and there are a lot of changes from Bootstrap 2.x.  is intended to help 2.x developers transition to 3.
-              </p>
+              <p id="status_3"></p>
               
             </div>
          </div> 
