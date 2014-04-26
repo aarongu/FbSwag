@@ -191,7 +191,6 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   	id = ids[index];
   }
   
-  function getComm
 };
 
   // Load the SDK asynchronously
