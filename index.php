@@ -3,6 +3,7 @@
 	<title>Test App</title>
         <!-- CSS -->
     <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+	<link href="index.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
 
       /* Sticky footer styles
@@ -67,9 +68,10 @@
 <body>
 <div id="fb-root"></div>
 <script>
+var name;
   window.fbAsyncInit = function() {
   FB.init({
-    appId      : '757126884332239',
+    appId      : '1414557272147252',
     status     : true, // check login status
     cookie     : true, // enable cookies to allow the server to access the session
     xfbml      : true  // parse XFBML
@@ -79,53 +81,63 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     if (response.status === 'connected') {
       console.log('Logged in');
 	  printPictures();
-	  //printNames();
+	  printNames();
 	  testAPI();
-	  getNames();
-	  getID(userInput);
-	  getStatuses();
     } else {
       FB.login();
     }
   });
   
-  function showRelationship() {
-  	FB.api('me/friends', function(response) {
-  		var names = new Array(); 
-  		var ids = new Array(); 
-  		for (var i = 0; i < response.data.length; i++) {
-  			names[i] = response.data[i]['name'];
-  			ids[i] = response.data[i]['id'];
-  		}
-  		
-  		var p = document.getElementById("relationship"); 
-  		p.innerHTML = "Relatinship Status";
-  	});
-  }
-  
-  var ids;
-  var names;
   function printPictures() {
+	name = location.search;
+	if (name.search("name=") != -1) {
+	console.log("name: " + name);
+	name = name.substr(6); 
+		name = name.replace("+", " ");
+		name = name.replace("+", " ");
+	console.log("name: " + name);
 	FB.api('me/friends', function(response) {
-		names = new Array();
-		ids = new Array();
+	console.log('printPictures called');
+		var names = new Array();
+		var ids = new Array();
 		for (var i = 0; i < response.data.length; i++) {
 			names[i] = response.data[i]['name'];
 			ids[i] = response.data[i]['id'];
 		}
-		console.log(id[1] + '/photos');
-		FB.api((ids[1] + '/photos'), function(response) {
+		getID(name.toLowerCase(), names, ids);
+		console.log(ids[names.indexOf(name)] + "/photos");
+		console.log(ids[names.indexOf(name)]);
+		FB.api((ids[names.indexOf(name)] + "/photos"), function(response) {
+			var pictures = new Array();
 			for (var i = 0; i < 5; i++) {
+				pictures[i] = response.data[i]['source'];
 				console.log(response.data[i]['source']);
 				document.getElementById('images').innerHTML += ('<img src="' + response.data[i]['source'] + '" alt="image" />');
 			}
 		});
+		FB.api((ids[names.indexOf(name)] + "/statuses"), function(response) {
+			console.log(response);
+			// document.getElementById('demo2').innerHTML=(response.data[0]["message"]); 
+			var gg = new Array();
+			for (var i = 0; i < response.data.length; i++) {
+				// gg[i] = {message: response.data[i]['message'], likes: response.data[i]['likes']['data'].length};
+				document.getElementbyId("demo2").innerHTML=response.data[i]['message'];
+				// document.getElementbyId("demo4").innerHTML=(response.data[i]['likes']['data'].length);
+			}
+		});
+		// getStatuses();
 	});
+	} else {
+		console.log("no parameter passed");
+	}
   };
   
-  var gg;
+    var gg;
   function getStatuses() {
-  	FB.api(id + '/statuses', function(response) {
+  	FB.api((id + "/statuses"), function(response) {
+		console.log(id);
+		console.log(response);
+		console.log(id + '/statuses/');
 		gg = new Array();
   		// for (var i = 0; i < response.data.length; i++) {
   		// 	statuses[i] = response.data['message'];
@@ -133,10 +145,14 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   		// for (var i = 0; i < response.data.length; i++) {
   		// 	likeCount[i] = response.data['likes']['data'].length;
   		// }
-  		for (var i = 0; i < response.data.length; i++) {
+  		for (var i = 0; i < 1; i++) {
   			gg[i] = {message: response.data['message'], likes: response.data['likes']['data'].length};
+			/*
   			document.getElementbyId("demo2").innerHTML+=(gg[i].message);
   			document.getElementbyId("demo4").innerHTML+=(gg[i].likes);
+			*/
+  			document.write(gg[i].message);
+  			document.write(gg[i].likes);
   		}
   		gg.sort(function (a, b) {
   			if (a.likes > b.likes) {
@@ -178,11 +194,11 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   });
 	
   }
-  
 };
-	var index;
+
 	var id;
-	function getID (input) {
+	function getID (input, names, ids) {
+		var index;
 	    	for(var i = 0; i < names.length; i++) {
 		  	var lower = names[i].toLowerCase();
 		  	if (lower == input) {
@@ -191,18 +207,6 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 	  	}
 	  	id = ids[index];
 	}
-
-  var userInput; // index of name in name array
-  function getName() {
-  	userInput = document.getElementById("tags").name;
-  	if (userInput == null) {
-  		console.log("doesnt work");
-  	} else {
-  		console.log("it works");
-  	}
-  	document.getElementbyId("demo").innerHTML=(userInput);
-  	userInput = userInput.toLowerCase();
-  }
 
   // Load the SDK asynchronously
   (function(d){
@@ -234,20 +238,17 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     </div>
     <p class="lead" id="images"></p>
     <p id="text"></p>
-    <div class="ui-widget">
+    <div class="ui-widget" id="test">
     <form action="">
   		<label for="tags">Search: </label>
-  		<input type="text" id="tags" name="name" />
-  		<p id="relationship" name="status">Relationship Status: </p>
-  		<button onclick="getName()">Submit</button>
-        <!--<input type="submit" />-->
+  		<input id="tags" name="name" />
+        <input type="submit" />
         </form>
-        <p id="demo"></p>
-        <p id="demo2"></p>
-        <p id="demo4"></p>
 	</div>
     <p>Use <a href="./sticky-footer-navbar.html">the sticky footer</a> with a fixed navbar if need be, too.</p>
-	<p class="muted credit"><fb:login-button show-faces="true" width="300" max-rows="1"></fb:login-button></p>
+	<p class="muted credit"><fb:login-button show-faces="true" scope="basic_info, friends_photos, friends_status" width="300" max-rows="1"></fb:login-button></p>
+	<p id="demo2"></p>
+	<p id="demo4"></p>
   </div>
 
   <div id="push"></div>
