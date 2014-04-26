@@ -96,8 +96,12 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   			ids[i] = response.data[i]['id'];
   		}
   		
-  		var p = document.getElementById("relationship"); 
-  		p.innerHTML = "Relatinship Status";
+  		FB.api((ids[1] + '?fields=relationship_status'), function(response) {
+  			var p = document.getElementById("relationship"); 
+  			p.innerHTML = "Relatinship Status: " + response.data[0]['relationship_status'];
+  		});
+  		
+  		
   	});
   };
   
