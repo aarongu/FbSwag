@@ -123,13 +123,13 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
 			#####RELATIONSHIP STATUS#####
 			
 			*/
-			document.getElementById("relationship").innerHTML=string + '.';
+			
+            //document.getElementById("relationship").innerHTML=string + '.';
             
             ///////////////
             // INSERTION //
             //////////////
-            var relationship_status = document.getElementById("relationship_status");
-            relationship_status.innerHTML += string;
+            document.getElementById("relationship_status").innerHTML = string;
             ///////////////
             // INSERTION //
             //////////////
