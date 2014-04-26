@@ -181,7 +181,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
   var index; // index of name in name array
   var id; // id #
   function getName() {
-  	var userInput = document.getElementById("personname").value;
+  	var userInput = document.getElementById("tags").value;
   	document.getElementbyId("demo").innerHTML=(userInput);
   	userinput = userinput.toLowerCase();
   	for(var i = 0; i < names.length; i++) {
@@ -226,7 +226,7 @@ FB.Event.subscribe('auth.authResponseChange', function(response) {
     <div class="ui-widget">
     <form>
   		<label for="tags">Search: </label>
-  		<input id="tags" name="name" id="personname" />
+  		<input id="tags" name="name" />
   		<p id="relationship" name="status">Relationship Status: </p>
   		<button onclick="getName()">Submit</button>
         <!--<input type="submit" />-->
