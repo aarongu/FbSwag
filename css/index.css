@@ -1,0 +1,25 @@
+#banner {
+	position: fixed;
+	left: 0;
+	top: 0;
+	background-image: url("../banner_bg.png");
+	background-image-repeat: repeat-x;
+	width: 100%;
+	z-index: 1;
+}
+
+body, html {
+	width: 100%;
+	z-index: 999;
+}
+
+#wrapper {
+	margin-top: 65px;
+}
+
+#login {
+	width: 200px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 0;
+}
