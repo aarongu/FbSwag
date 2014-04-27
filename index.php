@@ -515,31 +515,45 @@ window.fbAsyncInit = function() {
 								}
 								
 								// var total;
-								var total = picLikes.slice();
+								
+								var total = new Array();
+								for (var i = 0; i < picLikes.length; i++) {
+									total[i] = new Array(picLikes[i][0], picLikes[i][1], 0, 0);
+								}
 								for (var i = 0; i < picComments.length; i++) {
 									var found = false;
+									var currentName = picComments[i][0];
+									var currentComments = picComments[i][1];
 									for (var j = 0; j < picLikes.length; j++) {
-										if (total[j][0] == picComments[i][0]) {
+										if (total[j][0] == currentName) {
 											found = true;
-											total[j][1] = total[j][1] + picComments[i][1] * 1.5;
+											total[j][2] = currentComments;
 											break;
 										}
 									}
 									if (!found) {
-										total.push(picComments[i]);
+										total.push(new Array(currentName, 0, currentComments, 0));
 									}
+								}
+								for (var i = 0; i < total.length; i++) {
+									total[i][3] = (total[i][1] + (total[i][2] * 1.5));
 								}
 								// Sorted list of "best" friends where 1 comment is equal to 1.5 likes
 								total.sort((function(index){
 									return function(a, b) {
 										return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
 									};
-								})(1));
+								})(3));
 								/*
 								
 								#####TOP FRIENDS#####
 								
 								*/
+								
+								for (var i = 0; i < 3; i++) {
+									document.getElementById("best_friend_" + (i + 1)).innerHTML = total[i][0];
+									document.getElementById("friend_" + (i + 1)).innerHTML = total[i][2] + ' comments and ' + total[i][1] + ' likes';
+								}
 								
 							});
 						});
@@ -793,7 +807,47 @@ function testAPI() {
         </div>
       </div>
     
-    <hr>    
+    <hr>   
+    
+    
+          <div class="row">
+        <div class="col-md-12"><h2>Best Friends</h2></div>
+        <div class="col-md-4 col-sm-6">
+          <div class="panel panel-default">
+               <div class="panel-heading"> <h4 id="best_friend_1"></h4></div>
+            <div class="panel-body">
+                  <div class="clearfix"></div>
+                  <p id="friend_1"></p>
+                  
+                </div>
+             </div> 
+        </div>
+        
+            <div class="col-md-4 col-sm-6">
+          <div class="panel panel-default">
+               <div class="panel-heading"> <h4 id="best_friend_2"></h4></div>
+            <div class="panel-body">
+                  <div class="clearfix"></div>
+                  <p id="friend_2"></p>
+                  
+                </div>
+             </div> 
+        </div>
+        
+            <div class="col-md-4 col-sm-6">
+          <div class="panel panel-default">
+               <div class="panel-heading"> <h4 id="best_friend_3"></h4></div>
+            <div class="panel-body">
+                  <div class="clearfix"></div>
+                  <p id="friend_3"></p>
+                  
+                </div>
+             </div> 
+        </div>
+      </div>
+    
+    <hr>  
+     
         
     <!--/col-->
     
