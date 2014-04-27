@@ -232,12 +232,18 @@ window.fbAsyncInit = function() {
 							//////////////
 							// console.log(name);
 							document.getElementById('uploaded').innerHTML=name.substring(0, name.indexOf(" ")) + "'s Most Popular Pictures";
-							for (var i = 1; i <= 3; i++) {
+							var index = Math.min(3, pictures.length);
+							for (var i = 1; i <= index; i++) {
 									var current_picture = document.getElementById(("pic_" + i));
 									var current_name = document.getElementById(("pic_name_" + i));
 								
 								current_picture.src = pictures[i - 1][0];
 								current_name.innerHTML = pictures[i - 1][1] + " likes";
+							}
+							if (index < 3) {
+								for (var i = 3; i >= index; i++) {
+									document.getElementById('pic1' + i).innerHTML = '<p>No Picture</p>';
+								}
 							}
 						}
 					
@@ -253,11 +259,11 @@ window.fbAsyncInit = function() {
 										likes = dat.likes.data.length; //EDITED, CHECK
 									else
 										likes = 0;
-									pictures[i] = new Array(dat.source, likes);
+									taggedPictures[i] = new Array(dat.source, likes);
 								}
 								
 								// Sort the pictures based on the number of likes (index 1)
-								pictures.sort((function(index){
+								taggedPictures.sort((function(index){
 									return function(a, b) {
 										return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
 									};
@@ -272,12 +278,18 @@ window.fbAsyncInit = function() {
 								// INSERTION //
 								//////////////
 								document.getElementById('tagged').innerHTML=("Most Popular Pictures of " + name.substring(0, name.indexOf(" ")));
-								for (var i = 1; i <= 3; i++) {
+								index = Math.min(3, taggedPictures.length);
+								for (var i = 1; i <= index; i++) {
 										var current_picture = document.getElementById(("pic2_" + i));
 										var current_name = document.getElementById(("pic2_name_" + i));
 									
-									current_picture.src = pictures[i - 1][0];
-									current_name.innerHTML = pictures[i - 1][1] + " likes";
+										current_picture.src = taggedPictures[i - 1][0];
+										current_name.innerHTML = taggedPictures[i - 1][1] + " likes";
+								}
+								if (index < 3) {
+									for (var i = 3; i >= index; i++) {
+										document.getElementById('pic2' + i).innerHTML = '<p>No Picture</p>';
+									}
 								}
 							}
 						});
@@ -692,7 +704,7 @@ function testAPI() {
          <div class="col-sm-4 col-xs-6">
           
             <div class="panel panel-default">
-              <div class="panel-thumbnail"><img id="pic2_1" src="" class="img-responsive"></div>
+              <div class="panel-thumbnail" id="pic21"><img id="pic2_1" src="" class="img-responsive"></div>
               <div class="panel-body">
                 <p class="lead" id="pic2_name_1"></p>
     
@@ -705,7 +717,7 @@ function testAPI() {
           <div class="col-sm-4 col-xs-6">
           
             <div class="panel panel-default">
-              <div class="panel-thumbnail"><img id="pic2_2" src="" class="img-responsive"></div>
+              <div class="panel-thumbnail" id="pic22"><img id="pic2_2" src="" class="img-responsive"></div>
               <div class="panel-body">
                 <p class="lead" id="pic2_name_2"></p>
               </div>
@@ -717,7 +729,7 @@ function testAPI() {
           <div class="col-sm-4 col-xs-6">
           
             <div class="panel panel-default">
-              <div class="panel-thumbnail"><img id="pic2_3" src="" class="img-responsive"></div>
+              <div class="panel-thumbnail" id="pic23"><img id="pic2_3" src="" class="img-responsive"></div>
               <div class="panel-body">
                 <p class="lead" id="pic2_name_3"></p>
               </div>
@@ -734,7 +746,7 @@ function testAPI() {
          <div class="col-sm-4 col-xs-6">
           
             <div class="panel panel-default">
-              <div class="panel-thumbnail"><img id="pic_1" src="" class="img-responsive"></div>
+              <div class="panel-thumbnail" id="pic11"><img id="pic_1" src="" class="img-responsive"></div>
               <div class="panel-body">
                 <p class="lead" id="pic_name_1"></p>
     
@@ -747,7 +759,7 @@ function testAPI() {
           <div class="col-sm-4 col-xs-6">
           
             <div class="panel panel-default">
-              <div class="panel-thumbnail"><img id="pic_2" src="" class="img-responsive"></div>
+              <div class="panel-thumbnail" id="pic12"><img id="pic_2" src="" class="img-responsive"></div>
               <div class="panel-body">
                 <p class="lead" id="pic_name_2"></p>
               </div>
@@ -759,7 +771,7 @@ function testAPI() {
           <div class="col-sm-4 col-xs-6">
           
             <div class="panel panel-default">
-              <div class="panel-thumbnail"><img id="pic_3" src="" class="img-responsive"></div>
+              <div class="panel-thumbnail" id="pic13"><img id="pic_3" src="" class="img-responsive"></div>
               <div class="panel-body">
                 <p class="lead" id="pic_name_3"></p>
               </div>
