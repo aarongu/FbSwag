@@ -15,6 +15,8 @@
 		#loggedIn{display:none;}
 		#noParam{display:none;}
 		#login{display:block;}
+		#loginAfter{display:none;margin-bottom:10px;position:relative;bottom:0;left:0}
+		#processing{display:none;}
 	</style>
 </head>
 
@@ -37,6 +39,7 @@ window.fbAsyncInit = function() {
 		if (response.status === 'connected') {
 			console.log('Logged in');
 			document.getElementById("login").style.display="none";
+			document.getElementById("loginAfter").style.display="block";
 			// drawUI();
 			main();
 			testAPI();
@@ -130,7 +133,7 @@ window.fbAsyncInit = function() {
 						document.getElementById("invalid").innerHTML='Error: ' + name + ' is not a Facebook friend';
 						return;
 					}
-					document.getElementById("loggedIn").style.display="block";
+					document.getElementById('processing').style.display="block";
 					document.getElementById("tags").value=name;
 					// console.log(ids[names.indexOf(name)] + "/photos");
 					// console.log(ids[names.indexOf(name)]);
@@ -188,7 +191,7 @@ window.fbAsyncInit = function() {
 						}
 						if (index < 3) {
 							for (var i = 3; i > index; i--) {
-								document.getElementById('interest_' + (i + 1)).innerHTML+='No liked page in  the timeframe given';
+								document.getElementById('interest_' + i).innerHTML+='No liked page in  the timeframe given';
 							}
 						}
 					});
@@ -210,12 +213,58 @@ window.fbAsyncInit = function() {
 						// if (response.data.length == 0)
 							// alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
 						// else {
+						for (var i = 0; i < response.data.length; i++) {
+							var likes = 0;
+							var dat = response.data[i];
+							if (dat.likes != null)
+								likes = dat.likes.data.length; //EDITED, CHECK
+							pictures[i] = new Array(dat.source, likes);
+							for (var j = 0; j < likes; j++) {
+								var liker = dat.likes.data[j].name;
+								var found = false;
+								for (var k = 0; k < picLikes.length; k++) {
+									if (picLikes[k][0] == liker) {
+										picLikes[k][1]++;
+										found = true;
+										break;
+									}
+								}
+								if (!found)
+									picLikes.push(new Array(liker, 1));
+							}
+							var comments = 0;
+							if (dat.comments != null) {
+								comments = (dat.comments.data).length;
+							}
+							for (var j = 0; j < comments; j++) {
+								var commentor = dat.comments.data[j].from.name;
+								if (commentor != name) {
+									var found = false;
+									for (var k = 0; k < picComments.length; k++) {
+										if (picComments[k][0] == commentor) {
+											picComments[k][1]++;
+											found = true;
+											break;
+										}
+									}
+									if (!found)
+										picComments.push(new Array(commentor, 1));
+								}
+							}
+						}
+						
+						
+						
+							///////////////////////////////////////////////////////////////////////////////////////////////////////////
+							////Another request for pictures, because asking for more than 2500 at a time causes and internal error////
+							///////////////////////////////////////////////////////////////////////////////////////////////////////////
+						FB.api((id + "/photos/uploaded?limit=2500&offset=2500&fields=likes.limit(1000),comments.limit(1000),source&since=" + since), function(response) {
 							for (var i = 0; i < response.data.length; i++) {
 								var likes = 0;
 								var dat = response.data[i];
 								if (dat.likes != null)
 									likes = dat.likes.data.length; //EDITED, CHECK
-								pictures[i] = new Array(dat.source, likes);
+								pictures[i + 2500] = new Array(dat.source, likes);
 								for (var j = 0; j < likes; j++) {
 									var liker = dat.likes.data[j].name;
 									var found = false;
@@ -249,9 +298,14 @@ window.fbAsyncInit = function() {
 									}
 								}
 							}
+							
+							
+							
+							
 							// console.log(picLikes);
 							// console.log(picComments);
 							// Sort the pictures based on the number of likes (index 1)
+							console.log('Picture Size: ' + pictures.length);
 							pictures.sort((function(index){
 								return function(a, b) {
 									return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
@@ -323,7 +377,7 @@ window.fbAsyncInit = function() {
 							}
 							if (index < 3) {
 								for (var i = 3; i > index; i--) {
-									document.getElementById('pic2' + i).innerHTML = '<p style="text-align:center">No uploaded picture in time grame given</p>';
+									document.getElementById('pic2' + i).innerHTML = '<p style="text-align:center">No uploaded picture in timeframe given</p>';
 								}
 							}
 						});
@@ -619,6 +673,34 @@ window.fbAsyncInit = function() {
 									}
 								}
 								
+								FB.api('/fql', { q:{"query1":"SELECT uid FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me())AND is_app_user=1"}}, function(response) {
+									document.getElementById('users').innerHTML+='You are the only one out of all your friends that uses QuickView';
+									var users = new Array();
+									var links = new Array();
+									var dat = response.data[0].fql_result_set;
+									var len = 0;
+									for (var i = 0; i < dat.length; i++) {
+										var path = dat[i]['uid'];
+										FB.api(path + '/', function(response) {
+												console.log(len + ' ' + dat.length);
+												links[len] = response['link'];
+												
+												users[len] = response.name;
+												if (len == dat.length - 1) {
+													document.getElementById('users').innerHTML="";
+													for (var i = 0; i < len + 1; i++) {
+														document.getElementById('users').innerHTML+='<a href="' + links[i] + '" target="_blank">' + users[i] + '</a>, ';
+													}
+													document.getElementById('users').innerHTML+='and You use QuickView';
+													document.getElementById("loggedIn").style.display="block";
+													document.getElementById("processing").style.display="none";
+												}
+												len++;
+										});
+									}
+
+								});
+								
 							});
 						});
 					
@@ -626,6 +708,7 @@ window.fbAsyncInit = function() {
 					});
 					
 					// getStatuses();
+				});
 				});
 				
 			});
@@ -680,6 +763,8 @@ function testAPI() {
 <!-- WHERE THE HTML STARTS OMGGG -->
 <div id="banner">
 	<img src="banner.png" alt="" />
+    <p style="float:right;margin-right:10px;color:#23365d">Created by Aaron Gupta, Daniel Rahn, Eden<br />
+    									Ghirmai, Nakul Malhotra, and Yezen Rashid</p>
 </div>
 <div id="wrapper">
     <div class="jumbotron hero-spacer">
@@ -703,14 +788,15 @@ function testAPI() {
         
         
     </div>
-    <h1 id="current_name"></h1>
+    <h1 id="current_name" style="margin-top:-20px;font-family:'Myriad Pro','Lucidia Grande','Helvetica',sans-serif;font-weight:bold;"></h1>
     </div>
     
       
     <!--main-->
     <div class="container" id="main">
     	<div id="loggedIn">
-       <div class="row">
+      
+      <div class="row">
        <div class="col-md-4 col-sm-6">
             <div class="panel panel-default">
               <div class="panel-heading"><a href="" class="pull-right"></a> <h4>Likes</h4></div>
@@ -755,9 +841,9 @@ function testAPI() {
         </div>
       </div><!--/row-->
           <hr>
-      
-      <div class="row">
-          <h2 id="tagged"></h2><h3>(out of 400 most recent)</h3>
+          
+        <div class="row">
+          <h2 id="tagged"></h2>
       
          <div class="col-sm-4 col-xs-6">
           
@@ -796,7 +882,7 @@ function testAPI() {
           
           </div>
       </div>
-    <hr>
+    <hr>  
       
       <div class="row">
           <h2 id="uploaded"></h2>
@@ -986,11 +1072,19 @@ function testAPI() {
       	<div class="fb-login-button" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, 
         			user_photos, user_status, user_relationships, user_likes, friends_likes, user_location, friends_location" 
                     data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
-        </div>
+      </div>
         
         <div id="noParam" style="width: 100%;text-align:center;font-family:"Myriad Pro","Lucidia Grande", Helvetica, sans-serif;font-size:24pt;margin-top: 10%">
         	<h1>Welcome to QuickView! Enter a name in the search box to the right to get started!</h1>
         </div>
+        
+        <div id="processing" style="font-size:72pt;font-weight:bold;font-family:'Myriad Pro','Lucidia Grande',Helvetica,sans-serif;margin-top:100px;text-align:center;">
+        	Processing...
+        </div>
+      
+      <div id="loginAfter">
+      <p id="users" style="font-size:10pt;width:35%"></p>
+      </div>
         <!--playground-->
         
         
