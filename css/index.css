@@ -23,3 +23,32 @@ body, html {
 	margin-right: auto;
 	margin-top: 0;
 }
+
+#processingText {
+	-webkit-animation: pulse 1s infinite alternate;
+	-moz-animation: pulse 1s infinite alternate;
+	-ms-animation: pulse 1s infinite alternate;
+	-o-animation: pulse 1s infinite alternate;
+	animation: pulse 1s infinite alternate;
+}
+
+@-webkit-keyframes pulse {
+	from { color: black; }
+	to { color: #999; }
+}
+@-moz-keyframes pulse {
+	from { color: black; }
+	to { color: #999; }
+}
+@-ms-keyframes pulse {
+	from { color: black; }
+	to { color: #999; }
+}
+@-o-keyframes pulse {
+	from { color: black; }
+	to { color: #999; }
+}
+@keyframes pulse {
+	from { color: black; }
+	to { color: #999; }
+}
