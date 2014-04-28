@@ -6,6 +6,7 @@
     <link href="css/bootstrap-responsive.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
     <link href="css/index.css" rel="stylesheet" type="text/css">
+    <link href="icon.png" rel="icon" type="image/png" />
 
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
@@ -53,11 +54,38 @@ window.fbAsyncInit = function() {
 	
 	function main() {
 		//
+		var since = location.search;
 		var name = location.search;
 		console.log(name);
 		if (name.search("name=") != -1) {
-			document.getElementById("loggedIn").style.display="block";
-			name = name.substr(6);
+			if (name.search("since=") == -1)
+				name = name.substr(6);
+			else {
+				name = name.substr(6, name.indexOf("since=") - 7);
+				since = since.substr(since.indexOf("since=") + 6);
+			}
+			if (since == "All")
+				since = 0;
+			/*
+			604800">The Past Week</option>
+                <option id="month" value="2629743">The Past Month</option>
+                <option id="year" value="31556926
+			*/
+			else {
+				document.getElementById('all').selected='not selected';
+				if (since == '604800')
+					document.getElementById('week').selected='selected';
+				else if (since == '2629743')
+					document.getElementById('month').selected='selected';
+				else
+					document.getElementById('year').selected='selected';
+				// console.log(Date.now());	
+				// console.log(since);	
+				since = (Date.now()  - (since * 1000));
+				// console.log(since);
+				since = Math.floor(since / 1000);
+			}
+			console.log(since);
 			name = name.replace(/\+/g, " ");
 			//document.getElementById("name").innerHTML=name;
 			//console.log("name: " + name);
@@ -102,6 +130,8 @@ window.fbAsyncInit = function() {
 						document.getElementById("invalid").innerHTML='Error: ' + name + ' is not a Facebook friend';
 						return;
 					}
+					document.getElementById("loggedIn").style.display="block";
+					document.getElementById("tags").value=name;
 					// console.log(ids[names.indexOf(name)] + "/photos");
 					// console.log(ids[names.indexOf(name)]);
 					var first = name.substring(0, name.indexOf(" "));
@@ -146,14 +176,20 @@ window.fbAsyncInit = function() {
 					});
 					
 					// Get a list of the liked pages of the user
-					FB.api((id + '/likes'), function(response) {
+					FB.api((id + '/likes?since=' + since), function(response) {
 						// If no likes print that out
 						if (response.data.length == 0) {
 							document.getElementById('interest_1').innerHTML="No likes found";
 						}
 						// Get 1-3 likes
-						for (var i = 0; i < Math.min(response.data.length, 3); i++) {
+						var index = Math.min(response.data.length, 3);
+						for (var i = 0; i < index; i++) {
 							document.getElementById('interest_' + (i + 1)).innerHTML+=response.data[i].name;
+						}
+						if (index < 3) {
+							for (var i = 3; i > index; i--) {
+								document.getElementById('interest_' + (i + 1)).innerHTML+='No liked page in  the timeframe given';
+							}
 						}
 					});
 					
@@ -166,14 +202,14 @@ window.fbAsyncInit = function() {
 							document.getElementById('location').innerHTML="No Location Data";
 					});
 					
-					FB.api((id + "/photos/uploaded?limit=5000&fields=likes.limit(10000),comments.limit(1000),source"), function(response) {
+					FB.api((id + "/photos/uploaded?limit=2500&fields=likes.limit(1000),comments.limit(1000),source&since=" + since), function(response) {
 						var pictures = new Array();
 						var picLikes = new Array();
 						var picComments = new Array();
 						// console.log(response);
-						if (response.data.length == 0)
-							alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
-						else {
+						// if (response.data.length == 0)
+							// alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
+						// else {
 							for (var i = 0; i < response.data.length; i++) {
 								var likes = 0;
 								var dat = response.data[i];
@@ -214,7 +250,7 @@ window.fbAsyncInit = function() {
 								}
 							}
 							// console.log(picLikes);
-							console.log(picComments);
+							// console.log(picComments);
 							// Sort the pictures based on the number of likes (index 1)
 							pictures.sort((function(index){
 								return function(a, b) {
@@ -232,7 +268,7 @@ window.fbAsyncInit = function() {
 							//////////////
 							// console.log(name);
 							document.getElementById('uploaded').innerHTML=name.substring(0, name.indexOf(" ")) + "'s Most Popular Pictures";
-							var index = Math.min(3, pictures.length);
+							index = Math.min(3, pictures.length);
 							for (var i = 1; i <= index; i++) {
 									var current_picture = document.getElementById(("pic_" + i));
 									var current_name = document.getElementById(("pic_name_" + i));
@@ -242,15 +278,15 @@ window.fbAsyncInit = function() {
 							}
 							if (index < 3) {
 								for (var i = 3; i > index; i--) {
-									document.getElementById('pic1' + i).innerHTML = '<h2>No Picture<h2>';
+									document.getElementById('pic1' + i).innerHTML = '<p style="text-align:center;maring-top:20%;">No tagged picture in timeframe given</p>';
 								}
 							}
-						}
-					
-						FB.api((id + "/photos/tagged?limit=20000&fields=likes.limit(10000),source"), function(response) {
+						// }
+						
+						FB.api((id + "/photos/tagged?limit=400&fields=likes.limit(10000),source&since=" + since), function(response) {
 							var taggedPictures = new Array();
-							if (response.data.length == 0)
-								alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
+							// if (response.data.length == 0)
+								// alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
 							for (var i = 0; i < response.data.length; i++) {
 								var likes;
 								var dat = response.data[i];
@@ -287,7 +323,7 @@ window.fbAsyncInit = function() {
 							}
 							if (index < 3) {
 								for (var i = 3; i > index; i--) {
-									document.getElementById('pic2' + i).innerHTML = '<h2>No Picture</h2>';
+									document.getElementById('pic2' + i).innerHTML = '<p style="text-align:center">No uploaded picture in time grame given</p>';
 								}
 							}
 						});
@@ -329,11 +365,11 @@ window.fbAsyncInit = function() {
 					*/
 					
 						// Get names of commentors
-						FB.api((id + "/statuses?limit=10000&fields=comments.limit(10000),from"), function(response) {
+						FB.api((id + "/statuses?limit=10000&fields=comments.limit(10000),from&since=" + since), function(response) {
 							var comment = new Array();
 							// commentnames = new Array();
-							if (response.data.length == 0)
-								alert("Either this friend has no status updates, or app security settings are preventing this application from executing");
+							// if (response.data.length == 0)
+								// alert("Either this friend has no status updates, or app security settings are preventing this application from executing");
 							for (var i = 0; i < response.data.length; i++) {
 								
 								
@@ -393,8 +429,9 @@ window.fbAsyncInit = function() {
 							#####MOST COMMENTS#####
 							
 							*/
-							console.log(picComments);
-							for (var i = 1; i <= 4; i++) {
+							// console.log(picComments);
+							index = Math.min(4, picComments.length);
+							for (var i = 1; i <= index; i++) {
 								//document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
 								var num = parseInt(100.0 * picComments[i - 1][1] / picComments[0][1], 10) + "%";
 								document.getElementById("comments_graph_name_" + i).innerHTML =  picComments[i - 1][0]+ " / " + picComments[i - 1][1];
@@ -414,7 +451,7 @@ window.fbAsyncInit = function() {
 							}
 							
 							// get like information from each person
-							FB.api((id + "/statuses?limit=10000&fields=likes.limit(10000),comments.limit(10000),message"), function(response) {
+							FB.api((id + "/statuses?limit=10000&fields=likes.limit(10000),comments.limit(10000),message&since=" + since), function(response) {
 								var comment = new Array();
 								var statuses = new Array();
 								likecount = new Array();
@@ -492,8 +529,8 @@ window.fbAsyncInit = function() {
 								#####MOST LIKES#####
 								
 								*/
-								
-								for (var i = 1; i <= 4; i++) {
+								index = Math.min(4, picLikes.length);
+								for (var i = 1; i <= index; i++) {
 									//document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
 									var num = parseInt(100.0 * picLikes[i - 1][1] / picLikes[0][1], 10) + "%";
 									document.getElementById("likes_graph_name_" + i).innerHTML =  picLikes[i - 1][0]+ " / " + picLikes[i - 1][1];
@@ -518,8 +555,8 @@ window.fbAsyncInit = function() {
 								}
 								if (index < 3) {
 									for (var i = 3; i > index; i--) {
-										document.getElementById("status_likes_" + i).innerHTML = '<h2>(No Status)</h2>';
-										document.getElementById("status_" + i).innerHTML = '(No Status)';
+										document.getElementById("status_likes_" + i).innerHTML = '<h2>-</h2>';
+										document.getElementById("status_" + i).innerHTML = 'No status in the timeframe given';
 									}
 								}
 								
@@ -570,10 +607,16 @@ window.fbAsyncInit = function() {
 								#####TOP FRIENDS#####
 								
 								*/
-								
-								for (var i = 0; i < 3; i++) {
+								index = Math.min(total.length, 3);
+								for (var i = 0; i < index; i++) {
 									document.getElementById("best_friend_" + (i + 1)).innerHTML = total[i][0];
 									document.getElementById("friend_" + (i + 1)).innerHTML = total[i][2] + ' comments and ' + total[i][1] + ' likes';
+								}
+								if (index < 3) {
+									for (var i = 3; i > index; i--) {
+										document.getElementById("best_friend_" + i).innerHTML = '-';
+										document.getElementById("friend_" + i).innerHTML = 'No friend for the timeframe given';
+									}
 								}
 								
 							});
@@ -590,7 +633,7 @@ window.fbAsyncInit = function() {
 		} else {
 			/*
 			
-			#####DISPLAY IF NO NAME PARAMETER PASSED#####
+			#####DISPLAY IF NO  PARAMETER PASSED#####
 			
 			*/
 			document.getElementById('noParam').style.display="block";
@@ -642,9 +685,15 @@ function testAPI() {
     <div class="jumbotron hero-spacer">
         
         <div class="ui-widget" id="test">
-        <form style="float: right; clear: right; margin-top: 20px" action="">
+        <form style="float: right; clear: right; margin-top: -20px" action="">
             <label for="tags">Search Friends: </label>
-            <input id="tags" name="name" />
+            <input id="tags" name="name" /> <br /> from
+            <select name="since">
+            	<option id="week" value="604800">The Past Week</option>
+                <option id="month" value="2629743">The Past Month</option>
+                <option id="year" value="31556926">The Past Year</option>
+                <option id="all" value="All" selected="selected">The Origin of the Account</option>
+            </select>
             <input type="submit" />
             </form>
         <p id="invalid"></p>
@@ -882,21 +931,21 @@ function testAPI() {
     
                    <div class="col-md-6 col-sm-6">
           <div class="panel panel-default">
-               <div class="panel-heading"><a href="" class="pull-right"></a> <h4 id="mostComments">Biggest Commentors</h4></div>
+               <div class="panel-heading"><a href="" class="pull-right"></a> <h4 id="mostComments">Biggest Commenters</h4></div>
             <div class="panel-body">
-                  <span class = "bar_names" id="comments_graph_name_1"> NAME </span>
+                  <span class = "bar_names" id="comments_graph_name_1">  </span>
                   <div class="progress">
                     <div class="progress-bar progress-bar-info" id="comments_graph_1" style="" title="Stuff"></div>
                   </div>
-                  <span class = "bar_names" id="comments_graph_name_2"> NAME </span>
+                  <span class = "bar_names" id="comments_graph_name_2">  </span>
                   <div class="progress">
                     <div class="progress-bar progress-bar-success" id="comments_graph_2" style="" title="stuff 2"></div>
                   </div>
-                  <span class = "bar_names" id="comments_graph_name_3"> NAME </span>
+                  <span class = "bar_names" id="comments_graph_name_3">  </span>
                   <div class="progress">
                     <div class="progress-bar progress-bar-warning" id="comments_graph_3" style="" title="stuff 3"></div>
                   </div>
-                  <span class = "bar_names" id="comments_graph_name_4"> NAME </span>
+                  <span class = "bar_names" id="comments_graph_name_4">  </span>
                   <div class="progress">
                     <div class="progress-bar progress-bar-danger" id="comments_graph_4" style="" stuff="stuff4"></div>
                   </div>
@@ -911,21 +960,21 @@ function testAPI() {
           <div class="panel panel-default">
                <div class="panel-heading"><a href="" class="pull-right"></a> <h4 id="mostLikes">Most Likes</h4></div>
             <div class="panel-body">
-                  <span class = "bar_names" id="likes_graph_name_1"> NAME </span>
+                  <span class = "bar_names" id="likes_graph_name_1">  </span>
                   <div class="progress">
-                    <div id="likes_graph_1" class="progress-bar progress-bar-info" style="width: 70%" title="Stuff"></div>
+                    <div id="likes_graph_1" class="progress-bar progress-bar-info" style="width: 0" title="Stuff"></div>
                   </div>
-                  <span class = "bar_names" id="likes_graph_name_2"> NAME </span>
+                  <span class = "bar_names" id="likes_graph_name_2">  </span>
                   <div class="progress">
-                    <div id="likes_graph_2" class="progress-bar progress-bar-success" style="width: 80%" title="stuff 2"></div>
+                    <div id="likes_graph_2" class="progress-bar progress-bar-success" style="width: 0" title="stuff 2"></div>
                   </div>
-                  <span class = "bar_names" id="likes_graph_name_3"> NAME </span>
+                  <span class = "bar_names" id="likes_graph_name_3">  </span>
                   <div class="progress">
-                    <div id="likes_graph_3" class="progress-bar progress-bar-warning" style="width: 80%" title="stuff 3"></div>
+                    <div id="likes_graph_3" class="progress-bar progress-bar-warning" style="width: 0" title="stuff 3"></div>
                   </div>
-                  <span class = "bar_names" id="likes_graph_name_4"> NAME </span>
+                  <span class = "bar_names" id="likes_graph_name_4">  </span>
                   <div class="progress">
-                    <div id="likes_graph_4" class="progress-bar progress-bar-danger" style="width: 50%" stuff="stuff4"></div>
+                    <div id="likes_graph_4" class="progress-bar progress-bar-danger" style="width: 0" stuff="stuff4"></div>
                   </div>
                   
                 </div>
