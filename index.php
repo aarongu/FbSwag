@@ -241,8 +241,8 @@ window.fbAsyncInit = function() {
 								current_name.innerHTML = pictures[i - 1][1] + " likes";
 							}
 							if (index < 3) {
-								for (var i = 3; i >= index; i++) {
-									document.getElementById('pic1' + i).innerHTML = '<p>No Picture</p>';
+								for (var i = 3; i > index; i--) {
+									document.getElementById('pic1' + i).innerHTML = '<h2>No Picture<h2>';
 								}
 							}
 						}
@@ -251,45 +251,43 @@ window.fbAsyncInit = function() {
 							var taggedPictures = new Array();
 							if (response.data.length == 0)
 								alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
-							else {
-								for (var i = 0; i < response.data.length; i++) {
-									var likes;
-									var dat = response.data[i];
-									if (dat.likes != null)
-										likes = dat.likes.data.length; //EDITED, CHECK
-									else
-										likes = 0;
-									taggedPictures[i] = new Array(dat.source, likes);
-								}
+							for (var i = 0; i < response.data.length; i++) {
+								var likes;
+								var dat = response.data[i];
+								if (dat.likes != null)
+									likes = dat.likes.data.length; //EDITED, CHECK
+								else
+									likes = 0;
+								taggedPictures[i] = new Array(dat.source, likes);
+							}
+							
+							// Sort the pictures based on the number of likes (index 1)
+							taggedPictures.sort((function(index){
+								return function(a, b) {
+									return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+								};
+							})(1));
+							/*
+							
+							#####PHOTOS#####
+							
+							*/
+							
+							///////////////
+							// INSERTION //
+							//////////////
+							document.getElementById('tagged').innerHTML=("Most Popular Pictures of " + name.substring(0, name.indexOf(" ")));
+							index = Math.min(3, taggedPictures.length);
+							for (var i = 1; i <= index; i++) {
+									var current_picture = document.getElementById(("pic2_" + i));
+									var current_name = document.getElementById(("pic2_name_" + i));
 								
-								// Sort the pictures based on the number of likes (index 1)
-								taggedPictures.sort((function(index){
-									return function(a, b) {
-										return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-									};
-								})(1));
-								/*
-								
-								#####PHOTOS#####
-								
-								*/
-								
-								///////////////
-								// INSERTION //
-								//////////////
-								document.getElementById('tagged').innerHTML=("Most Popular Pictures of " + name.substring(0, name.indexOf(" ")));
-								index = Math.min(3, taggedPictures.length);
-								for (var i = 1; i <= index; i++) {
-										var current_picture = document.getElementById(("pic2_" + i));
-										var current_name = document.getElementById(("pic2_name_" + i));
-									
-										current_picture.src = taggedPictures[i - 1][0];
-										current_name.innerHTML = taggedPictures[i - 1][1] + " likes";
-								}
-								if (index < 3) {
-									for (var i = 3; i >= index; i++) {
-										document.getElementById('pic2' + i).innerHTML = '<p>No Picture</p>';
-									}
+									current_picture.src = taggedPictures[i - 1][0];
+									current_name.innerHTML = taggedPictures[i - 1][1] + " likes";
+							}
+							if (index < 3) {
+								for (var i = 3; i > index; i--) {
+									document.getElementById('pic2' + i).innerHTML = '<h2>No Picture</h2>';
 								}
 							}
 						});
@@ -512,11 +510,21 @@ window.fbAsyncInit = function() {
 									};
 								})(1));
 								
-								for (var i = 1; i <= 3; i++) {
-									document.getElementById("status_likes_" + i).innerHTML = statuses[i - 1][1] + " likes";
-									document.getElementById("status_" + i).innerHTML = statuses[i - 1][0];
+								index = Math.min(3, statuses.length);
+								
+								for (var i = 0; i < index; i++) {
+									document.getElementById("status_likes_" + (i+1)).innerHTML = statuses[i][1] + " likes";
+									document.getElementById("status_" + (i+1)).innerHTML = statuses[i][0];
+								}
+								if (index < 3) {
+									for (var i = 3; i > index; i--) {
+										document.getElementById("status_likes_" + i).innerHTML = '<h2>(No Status)</h2>';
+										document.getElementById("status_" + i).innerHTML = '(No Status)';
+									}
 								}
 								
+								
+								/*
 								function getIndex(likecount, dudename) {
 									for (var i = 0; i < likecount.length; i++) {
 										if (likecount[i][0] == dudename) {
@@ -525,6 +533,7 @@ window.fbAsyncInit = function() {
 									}
 									return -1;
 								}
+								*/
 								
 								// var total;
 								
