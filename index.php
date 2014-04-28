@@ -1079,7 +1079,7 @@ function testAPI() {
         </div>
         
         <div id="processing" style="font-size:72pt;font-weight:bold;font-family:'Myriad Pro','Lucidia Grande',Helvetica,sans-serif;margin-top:100px;text-align:center;">
-        	Processing...
+        	<p id="processingText">Processing...</p>
         </div>
       
       <div id="loginAfter">
