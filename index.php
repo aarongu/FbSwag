@@ -1,3 +1,7 @@
+<?php
+	header('Location: http://uwquickview.herokuapp.com');
+?>
+
 <html>
 <head>
 	<title>Quick View</title>
