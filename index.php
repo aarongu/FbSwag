@@ -11,13 +11,42 @@
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
     <script src="css/toggle.js" type="text/javascript"></script>
+	<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script> <!-- Map Script -->
+    <script>
+		function initialize() {
+			/*
+			var map_canvas = document.getElementById('map_canvas');
+			var mapOptions = {
+				center: new google.maps.LatLng(44.5403, -78.5463),
+				zoom: 8,
+				mapTypeId: google.maps.MapTypeId.ROADMAP
+			}
+			var map = new google.maps.Map(map_canvas, mapOptions);
+		}
+		google.maps.event.addDomListener(window, 'load', initialize);
+		*/
+		}
+	</script>
     <style>
 		#loggedIn{display:none;}
 		#noParam{display:none;}
 		#login{display:block;}
 		#loginAfter{display:none;margin-bottom:10px;position:relative;bottom:0;left:0}
 		#processing{display:none;}
+		#map_canvas {
+			width: 300px;
+			height: 300px;
+		}
 	</style>
+    <?php
+	$since = "";
+	$name = "";
+		if (isset($_POST['name'])) {
+			$name = $_POST['name'];
+		}
+		if (isset($_POST['since']))
+			$since = $_POST['since'];
+	?>
 </head>
 
 <body>
@@ -57,16 +86,10 @@ window.fbAsyncInit = function() {
 	
 	function main() {
 		//
-		var since = location.search;
-		var name = location.search;
+		var since = "<?= $since ?>";
+		var name = "<?= $name ?>";
 		console.log(name);
-		if (name.search("name=") != -1) {
-			if (name.search("since=") == -1)
-				name = name.substr(6);
-			else {
-				name = name.substr(6, name.indexOf("since=") - 7);
-				since = since.substr(since.indexOf("since=") + 6);
-			}
+		if (name.length != 0) {
 			if (since == "All")
 				since = 0;
 			/*
@@ -89,7 +112,13 @@ window.fbAsyncInit = function() {
 				since = Math.floor(since / 1000);
 			}
 			console.log(since);
-			name = name.replace(/\+/g, " ");
+			console.log(name);
+			var name = "<?= html_entity_decode($name) ?>";
+			console.log(name);
+			document.getElementById('nameParse').innerHTML = name;
+			document.getElementById('nameParse').style.display="none";
+			name = document.getElementById('nameParse').innerHTML;
+			console.log(name);
 			//document.getElementById("name").innerHTML=name;
 			//console.log("name: " + name);
 			
@@ -134,6 +163,14 @@ window.fbAsyncInit = function() {
 						return;
 					}
 					document.getElementById('processing').style.display="block";
+					var processingTime = Date.now();
+					var timer = true;
+					setTimeout(function() {moreTime(timer)}, 5000);
+					function moreTime(timer) {
+						if (timer) {
+							document.getElementById('processing').innerHTML="<h1>Still Processing...</h1><h2>(Lots of Pictures!)</h2>";
+						}
+					}
 					document.getElementById("tags").value=name;
 					// console.log(ids[names.indexOf(name)] + "/photos");
 					// console.log(ids[names.indexOf(name)]);
@@ -159,7 +196,8 @@ window.fbAsyncInit = function() {
 							if (connector != null)
 								string += ' ' + connector + ' ' + so;
 						} else
-							var string = name + ' has no relationship status';
+							var string = name + ' has no relationship status' + 
+							'<img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" style="width: 40px" class="img-circle pull-right" />';
 						/*
 						
 						#####RELATIONSHIP STATUS#####
@@ -171,7 +209,7 @@ window.fbAsyncInit = function() {
 						///////////////
 						// INSERTION //
 						//////////////
-						document.getElementById("relationship_status").innerHTML += string;
+						document.getElementById("relationship_status").innerHTML = string;
 						///////////////
 						// INSERTION //
 						//////////////
@@ -191,7 +229,7 @@ window.fbAsyncInit = function() {
 						}
 						if (index < 3) {
 							for (var i = 3; i > index; i--) {
-								document.getElementById('interest_' + i).innerHTML+='No liked page in  the timeframe given';
+								document.getElementById('interest_' + i).innerHTML='No liked page in  the timeframe given';
 							}
 						}
 					});
@@ -682,14 +720,13 @@ window.fbAsyncInit = function() {
 									for (var i = 0; i < dat.length; i++) {
 										var path = dat[i]['uid'];
 										FB.api(path + '/', function(response) {
-												console.log(len + ' ' + dat.length);
 												links[len] = response['link'];
-												
 												users[len] = response.name;
 												if (len == dat.length - 1) {
 													document.getElementById('users').innerHTML="";
 													for (var i = 0; i < len + 1; i++) {
 														document.getElementById('users').innerHTML+='<a href="' + links[i] + '" target="_blank">' + users[i] + '</a>, ';
+														timer = false;
 													}
 													document.getElementById('users').innerHTML+='and You use QuickView';
 													document.getElementById("loggedIn").style.display="block";
@@ -761,25 +798,26 @@ function testAPI() {
 
 
 <!-- WHERE THE HTML STARTS OMGGG -->
+<div id="nameParse"></div>
 <div id="banner">
-	<img src="banner.png" alt="" />
+	<img src="banner_binoc.png" alt="" />
     <p style="float:right;margin-right:10px;color:#23365d">Created by Aaron Gupta, Daniel Rahn, Eden<br />
     									Ghirmai, Nakul Malhotra, and Yezen Rashid</p>
 </div>
 <div id="wrapper">
-    <div class="jumbotron hero-spacer">
+    <div class="jumbotron hero-spacer" style="overflow:hidden">
         
         <div class="ui-widget" id="test">
-        <form style="float: right; clear: right; margin-top: -20px" action="">
-            <label for="tags">Search Friends: </label>
-            <input id="tags" name="name" /> <br /> from
-            <select name="since">
-            	<option id="week" value="604800">The Past Week</option>
-                <option id="month" value="2629743">The Past Month</option>
-                <option id="year" value="31556926">The Past Year</option>
-                <option id="all" value="All" selected="selected">The Origin of the Account</option>
-            </select>
-            <input type="submit" />
+            <form style="float: right; clear: right;" action="" method="post">
+                <label for="tags">Search Friends: </label>
+                <input id="tags" name="name" /> <br /> from
+                <select name="since">
+                    <option id="week" value="604800">The Past Week</option>
+                    <option id="month" value="2629743">The Past Month</option>
+                    <option id="year" value="31556926">The Past Year</option>
+                    <option id="all" value="All" selected="selected">Profile Creation</option>
+                </select>
+                <input type="submit" />
             </form>
         <p id="invalid"></p>
         <!--
@@ -787,8 +825,8 @@ function testAPI() {
         -->
         
         
-    </div>
-    <h1 id="current_name" style="margin-top:-20px;font-family:'Myriad Pro','Lucidia Grande','Helvetica',sans-serif;font-weight:bold;"></h1>
+    	</div>
+    	<h1 id="current_name" style="margin-top:-20px;font-family:'Myriad Pro','Lucidia Grande','Helvetica',sans-serif;font-weight:bold;"></h1>
     </div>
     
       
@@ -819,7 +857,7 @@ function testAPI() {
              <div class="panel panel-default">
                <div class="panel-heading"><a href="" class="pull-right"></a> <h4>Relationship Status: </h4></div>
             <div class="panel-body">
-                  <p id="relationship_status"><img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" style="width: 40px" class="img-circle pull-right" ></p>
+                  <p id="relationship_status"></p>
                   <div class="clearfix"></div>
                   <hr>
                  
@@ -835,6 +873,7 @@ function testAPI() {
                   <ul class="list-group">
                   <li class="list-group-item" id="location"></li>
                   </ul>
+                 <!-- <div id="map_canvas"></div> -->
                 </div>
           </div>
           
@@ -1074,12 +1113,12 @@ function testAPI() {
                     data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
       </div>
         
-        <div id="noParam" style="width: 100%;text-align:center;font-family:"Myriad Pro","Lucidia Grande", Helvetica, sans-serif;font-size:24pt;margin-top: 10%">
+        <div id="noParam" style="width: 100%;text-align:center;font-family:'Myriad Pro','Lucidia Grande', Helvetica, sans-serif;font-size:24pt;margin-top: 10%">
         	<h1>Welcome to QuickView! Enter a name in the search box to the right to get started!</h1>
         </div>
         
-        <div id="processing" style="font-size:72pt;font-weight:bold;font-family:'Myriad Pro','Lucidia Grande',Helvetica,sans-serif;margin-top:100px;text-align:center;">
-        	<p id="processingText">Processing...</p>
+        <div id="processing">
+        	<h1>Processing...</h1>
         </div>
       
       <div id="loginAfter">
