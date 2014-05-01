@@ -57,7 +57,61 @@
 
 <script>
 var loggedIn = false;
+
+var pictures = new Array();
+var picIndex = 4;
+var totalLikes = new Array();
+var totalComments = new Array();
+
+function sendFinalData(pics, likes, comments) {
+	pictures = pics;
+	totalLikes = likes;
+	totalComments = comments;
+}
+
+function removeUploaded() {
+	document.getElementById('removeUploaded').innerHTML="Removing...";
+	var string = document.getElementById('uploadedPics').innerHTML;
+	if (picIndex > 4) {
+		string = string.substr(0, string.lastIndexOf('<div class="row">'));
+		document.getElementById('uploadedPics').innerHTML=string;
+		picIndex -= 3;
+	}
+	if (picIndex > 4)
+		document.getElementById('removeUploaded').innerHTML="Show Less";
+	else 
+		document.getElementById('removeUploaded').innerHTML="";
+}
+
+function loadMoreUploaded() {
+	document.getElementById('moreUploaded').innerHTML="Loading...";
+	document.getElementById('uploadedPics').innerHTML += '<div class="row">';
+	for (var i = 0; i < 3; i++) {
+		if (picIndex <= pictures.length) {
+			document.getElementById('uploadedPics').innerHTML+='<div class="col-sm-4 col-xs-6">' +
+																	'<div class="panel panel-default">' + 
+																		'<div class="panel-thumbnail">' + 
+																			'<img src="' + pictures[picIndex - 1][0] + '" class="img-responsive"></div>' + 
+																		'<div class="panel-body">' + 
+																			 '<p class="lead" id="pic_name_3">' + pictures[picIndex - 1][1] + ' likes</p>' + 
+																		 '</div>' + 
+																	 '</div>' + 
+																'</div>';
+			picIndex++;
+		} else {
+			document.getElementById('moreUploaded').innerHTML="End of Pictures";
+		}
+	}
+	document.getElementById('uploadedPics').innerHTML+='</div>';
+	document.getElementById('removeUploaded').innerHTML="Show Less";
+	if (picIndex <= pictures.length)
+		document.getElementById('moreUploaded').innerHTML="Show More";
+	else
+		document.getElementById('moreUploaded').innerHTML="End of Pictures";
+
+}
 window.fbAsyncInit = function() {
+	console.log("fbAsyncInit");
 	FB.init({
 		appId      : '835981043095946',
 		status     : true, // check login status
@@ -217,7 +271,7 @@ window.fbAsyncInit = function() {
 			// If there are less than 3 liked pages, print out a message in each slot
 			if (index < 3)
 				for (var i = 3; i > index; i--)
-					document.getElementById('interest_' + i).innerHTML='No liked page in timeframe given';
+					document.getElementById('interest_' + i).innerHTML='-';
 		});
 	}
 	
@@ -381,6 +435,7 @@ window.fbAsyncInit = function() {
 				document.getElementById('pic1' + i).innerHTML = '<p style="text-align:center;maring-top:20%;">No tagged picture in timeframe given</p>';
 			}
 		}
+		sendFinalData(pictures, totalLikes, totalComments);
 		getTagged(id, since, name);
 		getStatuses(id, since, totalLikes, totalComments, name);
 	}
@@ -590,7 +645,6 @@ window.fbAsyncInit = function() {
 			var dat = response.data[0].fql_result_set;
 			var len = 0;
 			for (var i = 0; i < dat.length; i++) {
-				console.log("for loop" + len);
 				var path = dat[i]['uid'];
 				FB.api(path + '/', function(response) {
 					links[len] = response['link'];
@@ -778,6 +832,7 @@ function testAPI() {
       </div>
     <hr>  
       
+    <div id="uploadedPics">
       <div class="row">
           <h2 id="uploaded"></h2>
       
@@ -817,6 +872,9 @@ function testAPI() {
           
           </div>
       </div>
+      </div>
+      <div class="more" id="moreUploaded" style="clear:both;text-align:center;" onclick="loadMoreUploaded()">Show More</div>
+      <div class="less" id="removeUploaded" style="clear:both;text-align:center;" onclick="removeUploaded()"></div>
     <hr>
       
       
