@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>QuickView</title>
@@ -58,7 +59,7 @@
 var loggedIn = false;
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '498051066990191',
+		appId      : '835981043095946',
 		status     : true, // check login status
 		cookie     : true, // enable cookies to allow the server to access the session
 		xfbml      : true  // parse XFBML
@@ -84,696 +85,550 @@ window.fbAsyncInit = function() {
 		}
 	});
 	
+	// If logged in, run the main script
 	function main() {
-		//
+		// Get name and time period from the $_POST variables
 		var since = "<?= $since ?>";
 		var name = "<?= $name ?>";
-		console.log(name);
-		if (name.length != 0) {
-			if (since == "All")
-				since = 0;
-			/*
-			604800">The Past Week</option>
-                <option id="month" value="2629743">The Past Month</option>
-                <option id="year" value="31556926
-			*/
-			else {
-				document.getElementById('all').selected='not selected';
-				if (since == '604800')
-					document.getElementById('week').selected='selected';
-				else if (since == '2629743')
-					document.getElementById('month').selected='selected';
-				else
-					document.getElementById('year').selected='selected';
-				// console.log(Date.now());	
-				// console.log(since);	
-				since = (Date.now()  - (since * 1000));
-				// console.log(since);
-				since = Math.floor(since / 1000);
-			}
-			console.log(since);
-			console.log(name);
-			var name = "<?= html_entity_decode($name) ?>";
-			console.log(name);
-			document.getElementById('nameParse').innerHTML = name;
-			document.getElementById('nameParse').style.display="none";
-			name = document.getElementById('nameParse').innerHTML;
-			console.log(name);
-			//document.getElementById("name").innerHTML=name;
-			//console.log("name: " + name);
-			
-			///////////////
-			// INSERTION //
-			//////////////
-			document.getElementById("current_name").innerHTML = name;
-			///////////////
-			// INSERTION //
-			//////////////
-			
-			// Get the name and id of yourself
-			FB.api('me?fields=name,id', function(response) {
-				// console.log(response);
-				// console.log(name);
-				var me = response.name;
-				var meId = response.id;
-				// Get the name and id of all your friends
-				FB.api('me/friends?limit=6000&fields=name,id', function(response) {
+		// Only execute if there is a name parameter
+		if (name.length != 0)
+			getData(since, name);
+		else {
+			// If no name passed, show the welcome screen
+			document.getElementById('noParam').style.display="block";
+			var ids = new Array();
+			$(function() {
+				FB.api('/me/friends', function(response) {
 					var names = new Array();
-					var ids = new Array();
-					for (var i = 0; i < response.data.length; i++) {
-						names[i] = response.data[i].name;
-						ids[i] = response.data[i].id;
-					}
-					// Add yourself to the array
-					names[names.length] = me;
-					ids[ids.length] = meId;
-					if (name == me)
-						id = meId;
+					for (var i = 0; i < response.data.length; i++)
+						names[i] = response.data[i]['name'];
+					addOwnName(names);
+				});
+			});
+			console.log("no parameter passed");
+		}
+	}
+	
+	function getData(since, name) {
+		if (since == "All")
+			since = 0;
+		else {
+			selectCurrentTimeframe(since);
+			since = (Math.floor(Date.now() / 1000)  - since);
+		}
+		//Decode the HTML-version of the name
+		var name = "<?= html_entity_decode($name) ?>";
+		// The previous line doesn't get all characters for some reason,
+		// but printing the name in a hidden div and then grabbing it does
+		// the trick.
+		document.getElementById('nameParse').style.display="none";
+		document.getElementById('nameParse').innerHTML = name;
+		name = document.getElementById('nameParse').innerHTML;
+		console.log(name);
+		// Write searched for name in the header
+		document.getElementById("current_name").innerHTML = name;
+		// Get the name and id of yourself
+		FB.api('me?fields=name,id', function(response) {
+			var me = response.name;
+			var meId = response.id;
+			startSearch(name, since, me, meId);
+		});
+	}
+	
+	// Keep the dropdown item that was chosen by the user selected after
+	// the name is passed
+	function selectCurrentTimeframe(since) {
+		document.getElementById('all').selected='not selected';
+		if (since == '604800')
+			document.getElementById('week').selected='selected';
+		else if (since == '2629743')
+			document.getElementById('month').selected='selected';
+		else
+			document.getElementById('year').selected='selected';
+		// subtract the timeframe from the current time, which has to be converted from miliseconds to seconds
+	}
+	
+	// Start collecting data by first getting all of the user's friends
+	function startSearch(name, since, me, meId) {
+		FB.api('me/friends?limit=6000&fields=name,id', function(response) {
+			var names = new Array();
+			var ids = new Array();
+			for (var i = 0; i < response.data.length; i++) {
+				names[i] = response.data[i].name;
+				ids[i] = response.data[i].id;
+			}
+			// Add yourself to the array
+			names[names.length] = me;
+			ids[ids.length] = meId;
+			if (name == me)
+				id = meId;
+			else
+				var id = ids[names.indexOf(name)];
+			// Create a copy of the names to sort and then become part of the search function
+			var availableTags = names.slice();
+			availableTags.sort();
+			$( "#tags" ).autocomplete({
+				source: availableTags
+			});
+			// Print an error if the name is not found and stop execution
+			if (names.indexOf(name) == -1) {
+				document.getElementById("invalid").innerHTML='Sorry, it looks like ' + name + ' is not a Facebook friend';
+				return;
+			}
+			// Display the processing screen until everything has been calculated.
+			// The response from the api call is what takes the most time
+			document.getElementById('processing').style.display="block";
+			var processingTime = Date.now();
+			var timer = true;
+			
+			// Update the processing message after 5 seconds.
+			// Runs no matter what, but for most of the cases it will be display:none
+			// setTimeout(function() {moreTime(timer)}, 5000);
+			//function moreTime(timer) {
+			//	document.getElementById('processing').innerHTML="<h1>Still Processing...</h1><h2>(Lots of Pictures!)</h2>";
+			//}
+			
+			// Keep the searched for name in the search box
+			document.getElementById("tags").value = name;
+			var first = name.substring(0, name.indexOf(" "));
+			// Get the relationship status of the friend
+			getLikes(id, since);
+			getRelationshipStatus(id, name);
+			getLocation(id);
+			var pictures = new Array();
+			var totalLikes = new Array();
+			var totalComments = new Array();
+			var call = id + "/albums?limit=1&fields=name,photos.limit(100).since(" + since + ").fields(source,likes.limit(1000),comments.limit(1000)),count";
+			getPictures(id, call, 0, 0, since, pictures, totalLikes, totalComments, name);
+		});
+	}
+	
+	// Get a list of the liked pages of the user
+	function getLikes(id, since) {
+		FB.api((id + '/likes?since=' + since), function(response) {
+			// If no likes print that out
+			if (response.data.length == 0)
+				document.getElementById('interest_1').innerHTML="No likes found";
+			// Get 1-3 likes
+			var index = Math.min(response.data.length, 3);
+			for (var i = 0; i < index; i++) {
+				document.getElementById('interest_' + (i + 1)).innerHTML=response.data[i].name;
+			}
+			// If there are less than 3 liked pages, print out a message in each slot
+			if (index < 3)
+				for (var i = 3; i > index; i--)
+					document.getElementById('interest_' + i).innerHTML='No liked page in timeframe given';
+		});
+	}
+	
+	function getRelationshipStatus(id, name) {
+		FB.api((id + '?fields=relationship_status,significant_other'), function(response) {
+			if (response.relationship_status != null) {
+				var status = response.relationship_status;
+				var so;
+				if (response.significant_other != null)
+					so = response.significant_other.name;
+				var connector;
+				var to;
+				if (so != null) {
+					if (status == "Married" || status == "Widowed" || status == "Separated" || status == "Divorced")
+						connector = "to";
 					else
-						var id = ids[names.indexOf(name)];
-					// Create a copy of the names to sort and then become part of the search function
-					var availableTags = names.slice();
-					availableTags.sort();
-					$( "#tags" ).autocomplete({
-						source: availableTags
-					});
-					// Print an error if the name is not found
-					if (names.indexOf(name) == -1) {
-						document.getElementById("invalid").innerHTML='Error: ' + name + ' is not a Facebook friend';
+						connector = "with";
+				}
+				var string = name + ' is ' + status.toLowerCase();
+				if (connector != null)
+					string += ' ' + connector + ' ' + so;
+				string += '<img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" style="width: 40px" class="img-circle pull-right" />';
+			} else
+				var string = name + ' has no relationship status' + '<img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" style="width: 40px" class="img-circle pull-right" />';
+
+			// Write relationship status to HTML
+			console.log(string);
+			document.getElementById("relationship_status").innerHTML = string;
+		});
+	}
+	
+	// Get most recent location of user
+	function getLocation(id) {
+		FB.api((id + '?fields=location'), function(response) {
+			if (response['location'] != null)
+				document.getElementById('location').innerHTML='<p style="margin:0;padding:0">' + response.location.name + '</p>';
+			else
+				document.getElementById('location').innerHTML="No Location Data";
+		});
+	}
+	
+	function getPictures(id, call, index, offset, since, pictures, totalLikes, totalComments, name) {
+		if (index <=5000)
+			document.getElementById('processing').innerHTML="<h1>Processing...</h1><h2>(" + (index) + " Pictures Processed)</h2>";
+		else if (index > 5000 && index <= 10000)
+			document.getElementById('processing').innerHTML="<h1>Processing...</h1><h2>(" + (index) + " Pictures Processed)</h2><h3>Really? Over 5000?</h3>";
+		else
+			document.getElementById('processing').innerHTML="<h1>Processing...</h1><h2>(" + (index) + " Pictures Processed)</h2><h3>Over 10,000???</h3>"
+		FB.api(call, function(response) {
+			var album;
+			var dat = response.data[0];
+			if (dat != null) {
+				var photos;
+				
+				if ((dat['name']) != null) {
+					console.log(dat.name + ": " + dat.count);
+					if (dat.count > 0)
+						photos = dat.photos.data;
+					else {
+						var nextCall = id + "/albums?offset=" + (offset + 1) + "&limit=1&fields=name,photos.limit(100).since(" + since + ").fields(source,likes.limit(1000),comments.limit(1000)),count";
+						getPictures(id, nextCall, index, offset + 1, since, pictures, totalLikes, totalComments, name);
 						return;
 					}
-					document.getElementById('processing').style.display="block";
-					var processingTime = Date.now();
-					var timer = true;
-					setTimeout(function() {moreTime(timer)}, 5000);
-					function moreTime(timer) {
-						if (timer) {
-							document.getElementById('processing').innerHTML="<h1>Still Processing...</h1><h2>(Lots of Pictures!)</h2>";
-						}
-					}
-					document.getElementById("tags").value=name;
-					// console.log(ids[names.indexOf(name)] + "/photos");
-					// console.log(ids[names.indexOf(name)]);
-					var first = name.substring(0, name.indexOf(" "));
-					// document.getElementById('mostComments').innerHTML += ' ' + first + "'s Statuses";
-					// document.getElementById('mostLikes').innerHTML += ' ' + first + "'s Statuses";
-					// Get the relationship status of the friend
-					FB.api((id + '?fields=relationship_status,significant_other'), function(response) {
-						if (response.relationship_status != null) {
-							var status = response.relationship_status;
-							var so;
-							if (response.significant_other != null)
-								so = response.significant_other.name;
-							var connector;
-							var to;
-							if (so != null) {
-								if (status == "Married" || status == "Widowed" || status == "Separated" || status == "Divorced")
-									connector = "to";
-								else
-									connector = "with";
+				} else
+					photos = response.data;
+					
+				if (photos != null) {
+					for (var i = 0; i < photos.length; i++) {
+						var likes = 0;
+						var dat2 = photos[i];
+						if (dat2.likes != null)
+							likes = dat2.likes.data.length;
+						pictures.push(new Array(dat2.source, likes));
+						// For every like, record the name
+						for (var j = 0; j < likes; j++) {
+							var liker = dat2.likes.data[j].name;
+							var found = false;
+							for (var k = 0; k < totalLikes.length; k++) {
+								if (totalLikes[k][0] == liker) {
+									totalLikes[k][1]++;
+									found = true;
+									break;
+								}
 							}
-							var string = name + ' is ' + status.toLowerCase();
-							if (connector != null)
-								string += ' ' + connector + ' ' + so;
-						} else
-							var string = name + ' has no relationship status' + 
-							'<img src="http://www.iconarchive.com/download/i66644/designbolts/free-valentine-heart/Heart-Shadow.ico" style="width: 40px" class="img-circle pull-right" />';
-						/*
-						
-						#####RELATIONSHIP STATUS#####
-						
-						*/
-						
-						//document.getElementById("relationship").innerHTML=string + '.';
-						
-						///////////////
-						// INSERTION //
-						//////////////
-						document.getElementById("relationship_status").innerHTML = string;
-						///////////////
-						// INSERTION //
-						//////////////
-						
-					});
-					
-					// Get a list of the liked pages of the user
-					FB.api((id + '/likes?since=' + since), function(response) {
-						// If no likes print that out
-						if (response.data.length == 0) {
-							document.getElementById('interest_1').innerHTML="No likes found";
+							if (!found)
+								totalLikes.push(new Array(liker, 1));
 						}
-						// Get 1-3 likes
-						var index = Math.min(response.data.length, 3);
-						for (var i = 0; i < index; i++) {
-							document.getElementById('interest_' + (i + 1)).innerHTML+=response.data[i].name;
+						var comments = 0;
+						if (dat2.comments != null) {
+							comments = (dat2.comments.data).length;
 						}
-						if (index < 3) {
-							for (var i = 3; i > index; i--) {
-								document.getElementById('interest_' + i).innerHTML='No liked page in  the timeframe given';
-							}
-						}
-					});
-					
-					// Get most recent location of user
-					FB.api((id + '?fields=location'), function(response) {
-						if (response['location'] != null) {
-							///
-							document.getElementById('location').innerHTML='<p style="margin:0;padding:0">' + response.location.name + '</p>';
-						} else
-							document.getElementById('location').innerHTML="No Location Data";
-					});
-					
-					FB.api((id + "/photos/uploaded?limit=2500&fields=likes.limit(1000),comments.limit(1000),source&since=" + since), function(response) {
-						var pictures = new Array();
-						var picLikes = new Array();
-						var picComments = new Array();
-						// console.log(response);
-						// if (response.data.length == 0)
-							// alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
-						// else {
-						for (var i = 0; i < response.data.length; i++) {
-							var likes = 0;
-							var dat = response.data[i];
-							if (dat.likes != null)
-								likes = dat.likes.data.length; //EDITED, CHECK
-							pictures[i] = new Array(dat.source, likes);
-							for (var j = 0; j < likes; j++) {
-								var liker = dat.likes.data[j].name;
+						// For every comment, record the name (if it isn't the person being viewed)
+						for (var j = 0; j < comments; j++) {
+							var commentor = dat2.comments.data[j].from.name;
+							if (commentor != name) {
 								var found = false;
-								for (var k = 0; k < picLikes.length; k++) {
-									if (picLikes[k][0] == liker) {
-										picLikes[k][1]++;
+								for (var k = 0; k < totalComments.length; k++) {
+									if (totalComments[k][0] == commentor) {
+										totalComments[k][1]++;
 										found = true;
 										break;
 									}
 								}
 								if (!found)
-									picLikes.push(new Array(liker, 1));
-							}
-							var comments = 0;
-							if (dat.comments != null) {
-								comments = (dat.comments.data).length;
-							}
-							for (var j = 0; j < comments; j++) {
-								var commentor = dat.comments.data[j].from.name;
-								if (commentor != name) {
-									var found = false;
-									for (var k = 0; k < picComments.length; k++) {
-										if (picComments[k][0] == commentor) {
-											picComments[k][1]++;
-											found = true;
-											break;
-										}
-									}
-									if (!found)
-										picComments.push(new Array(commentor, 1));
-								}
+									totalComments.push(new Array(commentor, 1));
 							}
 						}
-						
-						
-						
-							///////////////////////////////////////////////////////////////////////////////////////////////////////////
-							////Another request for pictures, because asking for more than 2500 at a time causes and internal error////
-							///////////////////////////////////////////////////////////////////////////////////////////////////////////
-						FB.api((id + "/photos/uploaded?limit=2500&offset=2500&fields=likes.limit(1000),comments.limit(1000),source&since=" + since), function(response) {
-							for (var i = 0; i < response.data.length; i++) {
-								var likes = 0;
-								var dat = response.data[i];
-								if (dat.likes != null)
-									likes = dat.likes.data.length; //EDITED, CHECK
-								pictures[i + 2500] = new Array(dat.source, likes);
-								for (var j = 0; j < likes; j++) {
-									var liker = dat.likes.data[j].name;
-									var found = false;
-									for (var k = 0; k < picLikes.length; k++) {
-										if (picLikes[k][0] == liker) {
-											picLikes[k][1]++;
-											found = true;
-											break;
-										}
-									}
-									if (!found)
-										picLikes.push(new Array(liker, 1));
-								}
-								var comments = 0;
-								if (dat.comments != null) {
-									comments = (dat.comments.data).length;
-								}
-								for (var j = 0; j < comments; j++) {
-									var commentor = dat.comments.data[j].from.name;
-									if (commentor != name) {
-										var found = false;
-										for (var k = 0; k < picComments.length; k++) {
-											if (picComments[k][0] == commentor) {
-												picComments[k][1]++;
-												found = true;
-												break;
-											}
-										}
-										if (!found)
-											picComments.push(new Array(commentor, 1));
-									}
-								}
-							}
-							
-							
-							
-							
-							// console.log(picLikes);
-							// console.log(picComments);
-							// Sort the pictures based on the number of likes (index 1)
-							console.log('Picture Size: ' + pictures.length);
-							pictures.sort((function(index){
-								return function(a, b) {
-									return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-								};
-							})(1));
-							/*
-							
-							#####PHOTOS#####
-							
-							*/
-							
-							///////////////
-							// INSERTION //
-							//////////////
-							// console.log(name);
-							document.getElementById('uploaded').innerHTML=name.substring(0, name.indexOf(" ")) + "'s Most Popular Pictures";
-							index = Math.min(3, pictures.length);
-							for (var i = 1; i <= index; i++) {
-									var current_picture = document.getElementById(("pic_" + i));
-									var current_name = document.getElementById(("pic_name_" + i));
-								
-								current_picture.src = pictures[i - 1][0];
-								current_name.innerHTML = pictures[i - 1][1] + " likes";
-							}
-							if (index < 3) {
-								for (var i = 3; i > index; i--) {
-									document.getElementById('pic1' + i).innerHTML = '<p style="text-align:center;maring-top:20%;">No tagged picture in timeframe given</p>';
-								}
-							}
-						// }
-						
-						FB.api((id + "/photos/tagged?limit=400&fields=likes.limit(10000),source&since=" + since), function(response) {
-							var taggedPictures = new Array();
-							// if (response.data.length == 0)
-								// alert("Warning: friend may have app privacy settings set that interfere with the running of this application");
-							for (var i = 0; i < response.data.length; i++) {
-								var likes;
-								var dat = response.data[i];
-								if (dat.likes != null)
-									likes = dat.likes.data.length; //EDITED, CHECK
-								else
-									likes = 0;
-								taggedPictures[i] = new Array(dat.source, likes);
-							}
-							
-							// Sort the pictures based on the number of likes (index 1)
-							taggedPictures.sort((function(index){
-								return function(a, b) {
-									return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-								};
-							})(1));
-							/*
-							
-							#####PHOTOS#####
-							
-							*/
-							
-							///////////////
-							// INSERTION //
-							//////////////
-							document.getElementById('tagged').innerHTML=("Most Popular Pictures of " + name.substring(0, name.indexOf(" ")));
-							index = Math.min(3, taggedPictures.length);
-							for (var i = 1; i <= index; i++) {
-									var current_picture = document.getElementById(("pic2_" + i));
-									var current_name = document.getElementById(("pic2_name_" + i));
-								
-									current_picture.src = taggedPictures[i - 1][0];
-									current_name.innerHTML = taggedPictures[i - 1][1] + " likes";
-							}
-							if (index < 3) {
-								for (var i = 3; i > index; i--) {
-									document.getElementById('pic2' + i).innerHTML = '<p style="text-align:center">No uploaded picture in timeframe given</p>';
-								}
-							}
-						});
-					
-					// Get most liked posts
-					/*
-					FB.api((id + "/statuses?limit=10000&fields=likes.limit(10000),message"), function(response) {
-						// document.getElementById('demo2').innerHTML=(response.data[0]["message"]);
-						// console.log('LIKES ARRAY');
-						// console.log(response);
-						var statuses = new Array();
-						for (var i = 0; i < response.data.length; i++) {
-							var likes;
-							if (response.data[i].likes != null) {
-								likes = response.data[i]['likes'].data.length;
-							} else {
-								likes = 0;
-							}
-							var message = response.data[i].message;
-							if (message == null)
-								message = "(Hidden/Deleted Status)"
-							// convert new line characters into break tags
-							message = message.replace(/\n/g, '<br />');
-							statuses[i] = new Array(message, likes);
-							// document.getElementById("demo2").innerHTML+=(gg[i][0] + ' Likes: ' + gg[i][1] + '<br />');
-						}
-						// Sort the statuses based on the number of likes
-						statuses.sort((function(index){
-							return function(a, b) {
-								return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-							};
-						})(1));
-						
-						for (var i = 1; i <= 3; i++) {
-							document.getElementById("status_likes_" + i).innerHTML = statuses[i - 1][1] + " likes";
-							document.getElementById("status_" + i).innerHTML = statuses[i - 1][0];
-						}
-					});
-					*/
-					
-						// Get names of commentors
-						FB.api((id + "/statuses?limit=10000&fields=comments.limit(10000),from&since=" + since), function(response) {
-							var comment = new Array();
-							// commentnames = new Array();
-							// if (response.data.length == 0)
-								// alert("Either this friend has no status updates, or app security settings are preventing this application from executing");
-							for (var i = 0; i < response.data.length; i++) {
-								
-								
-									/* FOR REFERENCE
-									
-									var found = false;
-									for (var k = 0; k < picLikes.length; k++) {
-										if (picLikes[k][0] == liker) {
-											picLikes[k][1]++;
-											found = true;
-											break;
-										}
-									}
-									if (!found)
-										picLikes.push(new Array(liker, 1));
-									
-									*/
-								
-								
-								if (response.data[i].comments != null) {
-									comment[i] = response.data[i].comments.data; // returns the data array containing comments
-									for (var j = 0; j < comment[i].length; j++) {
-										var dudename = comment[i][j].from.name;
-										if (dudename != name) {
-											var found = false;
-											for (var k = 0; k < picComments.length; k++) {
-												if (picComments[k][0] == dudename) {
-													picComments[k][1]++;
-													found = true;
-													break;
-												}
-											}
-											if (!found)
-												picComments.push(new Array(dudename, 1));
-										}
-											
-											/*
-											var index = getIndex(commentnames, dudename);
-											if (index == -1) {
-												commentnames.push(new Array(dudename, 1));
-											} else {
-												commentnames[index][1]++;
-											}
-										}
-										*/
-									}
-								}
-							}
-							// Sort comments based on 
-							picComments.sort((function(index){
-								return function(a, b) {
-									return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-								};
-							})(1));
-							/*
-							
-							#####MOST COMMENTS#####
-							
-							*/
-							// console.log(picComments);
-							index = Math.min(4, picComments.length);
-							for (var i = 1; i <= index; i++) {
-								//document.getElementById('demo3').innerHTML+=(commentnames[i][0] + ' count ' + commentnames[i][1] + '<br />');
-								var num = parseInt(100.0 * picComments[i - 1][1] / picComments[0][1], 10) + "%";
-								document.getElementById("comments_graph_name_" + i).innerHTML =  picComments[i - 1][0]+ " / " + picComments[i - 1][1];
-								document.getElementById("comments_graph_" + i).style.width = num;
-								
-								
-								//document.getElementById("comments_graph_" + i).style.width = "100%";
-							}
-							
-							function getIndex(commentnames, dudename) {
-								for (var i = 0; i < commentnames.length; i++) {
-									if (commentnames[i][0] == dudename) {
-										return i;
-									}
-								}
-								return -1;
-							}
-							
-							// get like information from each person
-							FB.api((id + "/statuses?limit=10000&fields=likes.limit(10000),comments.limit(10000),message&since=" + since), function(response) {
-								var comment = new Array();
-								var statuses = new Array();
-								likecount = new Array();
-								for (var i = 0; i < response.data.length; i++) {
-									
-									//////////////////////////
-									////Most Popular Posts////
-									//////////////////////////
-									var message = response.data[i].message;
-									// console.log(message);
-									if (message == null)
-										message = "(Hidden/Deleted Status)"
-									// convert new line characters into break tags
-									message = message.replace(/\n/g, '<br />');
-									var likes = 0;
-									if (response.data[i].likes != null)
-										likes = response.data[i].likes.data.length;
-									statuses[i] = new Array(message, likes);
-									
-									////////////////////////
-									////Individual Likes////
-									////////////////////////
-									
-									/* FOR REFERENCE
-									
-									var found = false;
-									for (var k = 0; k < picLikes.length; k++) {
-										if (picLikes[k][0] == liker) {
-											picLikes[k][1]++;
-											found = true;
-											break;
-										}
-									}
-									if (!found)
-										picLikes.push(new Array(liker, 1));
-									
-									*/
-									
-									if (response.data[i].likes != null) {
-										comment[i] = response.data[i].likes.data; // returns the data array containing likes
-										for (var j = 0; j < comment[i].length; j++) {
-											var dudename = comment[i][j].name;
-											var found = false;
-											for (var k = 0; k < picLikes.length; k++) {
-												if (picLikes[k][0] == dudename) {
-													picLikes[k][1]++;
-													found=true;
-													break;
-												}
-											}
-											if (!found) 
-												picLikes.push(new Array(dudename, 1));
-										}
-										/*
-											if (dudename != name) {
-												var index = getIndex(likecount, dudename);
-												if (index == -1) {
-													likecount.push(new Array(dudename, 1));
-												} else {
-													likecount[index][1]++;
-												}
-											}
-										}
-										*/
-									}
-								}
-								
-								picLikes.sort((function(index){
-									return function(a, b) {
-										return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-									};
-								})(1));
-								/*
-								
-								#####MOST LIKES#####
-								
-								*/
-								index = Math.min(4, picLikes.length);
-								for (var i = 1; i <= index; i++) {
-									//document.getElementById('demo6').innerHTML+=(likecount[i][0] + ' count ' + likecount[i][1] + '<br />');
-									var num = parseInt(100.0 * picLikes[i - 1][1] / picLikes[0][1], 10) + "%";
-									document.getElementById("likes_graph_name_" + i).innerHTML =  picLikes[i - 1][0]+ " / " + picLikes[i - 1][1];
-									document.getElementById("likes_graph_" + i).style.width = num;
-									
-									
-									//document.getElementById("comments_graph_" + i).style.width = "100%";
-								}
-								
-								// Sort the statuses based on the number of likes
-								statuses.sort((function(index){
-									return function(a, b) {
-										return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-									};
-								})(1));
-								
-								index = Math.min(3, statuses.length);
-								
-								for (var i = 0; i < index; i++) {
-									document.getElementById("status_likes_" + (i+1)).innerHTML = statuses[i][1] + " likes";
-									document.getElementById("status_" + (i+1)).innerHTML = statuses[i][0];
-								}
-								if (index < 3) {
-									for (var i = 3; i > index; i--) {
-										document.getElementById("status_likes_" + i).innerHTML = '<h2>-</h2>';
-										document.getElementById("status_" + i).innerHTML = 'No status in the timeframe given';
-									}
-								}
-								
-								
-								/*
-								function getIndex(likecount, dudename) {
-									for (var i = 0; i < likecount.length; i++) {
-										if (likecount[i][0] == dudename) {
-											return i;
-										}
-									}
-									return -1;
-								}
-								*/
-								
-								// var total;
-								
-								var total = new Array();
-								for (var i = 0; i < picLikes.length; i++) {
-									total[i] = new Array(picLikes[i][0], picLikes[i][1], 0, 0);
-								}
-								for (var i = 0; i < picComments.length; i++) {
-									var found = false;
-									var currentName = picComments[i][0];
-									var currentComments = picComments[i][1];
-									for (var j = 0; j < picLikes.length; j++) {
-										if (total[j][0] == currentName) {
-											found = true;
-											total[j][2] = currentComments;
-											break;
-										}
-									}
-									if (!found) {
-										total.push(new Array(currentName, 0, currentComments, 0));
-									}
-								}
-								for (var i = 0; i < total.length; i++) {
-									total[i][3] = (total[i][1] + (total[i][2] * 1.5));
-								}
-								// Sorted list of "best" friends where 1 comment is equal to 1.5 likes
-								total.sort((function(index){
-									return function(a, b) {
-										return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
-									};
-								})(3));
-								/*
-								
-								#####TOP FRIENDS#####
-								
-								*/
-								index = Math.min(total.length, 3);
-								for (var i = 0; i < index; i++) {
-									document.getElementById("best_friend_" + (i + 1)).innerHTML = total[i][0];
-									document.getElementById("friend_" + (i + 1)).innerHTML = total[i][2] + ' comments and ' + total[i][1] + ' likes';
-								}
-								if (index < 3) {
-									for (var i = 3; i > index; i--) {
-										document.getElementById("best_friend_" + i).innerHTML = '-';
-										document.getElementById("friend_" + i).innerHTML = 'No friend for the timeframe given';
-									}
-								}
-								
-								FB.api('/fql', { q:{"query1":"SELECT uid FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me())AND is_app_user=1"}}, function(response) {
-									document.getElementById('users').innerHTML+='You are the only one out of all your friends that uses QuickView';
-									var users = new Array();
-									var links = new Array();
-									var dat = response.data[0].fql_result_set;
-									var len = 0;
-									for (var i = 0; i < dat.length; i++) {
-										var path = dat[i]['uid'];
-										FB.api(path + '/', function(response) {
-												links[len] = response['link'];
-												users[len] = response.name;
-												if (len == dat.length - 1) {
-													document.getElementById('users').innerHTML="";
-													for (var i = 0; i < len + 1; i++) {
-														document.getElementById('users').innerHTML+='<a href="' + links[i] + '" target="_blank">' + users[i] + '</a>, ';
-														timer = false;
-													}
-													document.getElementById('users').innerHTML+='and You use QuickView';
-													document.getElementById("loggedIn").style.display="block";
-													document.getElementById("processing").style.display="none";
-												}
-												len++;
-										});
-									}
-
-								});
-								
-							});
-						});
-					
-					
-					});
-					
-					// getStatuses();
-				});
-				});
-				
-			});
-			
-		} else {
-			/*
-			
-			#####DISPLAY IF NO  PARAMETER PASSED#####
-			
-			*/
-			document.getElementById('noParam').style.display="block";
-			var ids = new Array();
-			$(function() {
-				FB.api('/me/friends', function(response) {
-					var availableTags = new Array();
-					var ids = new Array();
-					for (var i = 0; i < response.data.length; i++) {
-						availableTags[i] = response.data[i]['name'];
 					}
-					availableTags.sort();
-					$( "#tags" ).autocomplete({
-						source: availableTags
-					});
-				});
-			});
-			console.log("no parameter passed");
+					
+					index += photos.length;
+				}
+				console.log(index + " total pictures so far");
+				
+				if (dat.name != null) {
+					if (dat.photos != null)
+						page = dat.photos.paging;
+					else {
+						var nextCall = id + "/albums?offset=" + (offset + 1) + "&limit=1&fields=name,photos.limit(100).since(" + since + ").fields(source,likes.limit(1000),comments.limit(1000)),count";
+						getPictures(id, nextCall, index, offset + 1, since, pictures, totalLikes, totalComments, name);
+						return;
+					}
+				} else
+					page = response.paging;
+					
+				if (page.next != null) {
+					console.log("next: " + page.next);
+					getPictures(id, page.next, index, offset, since, pictures, totalLikes, totalComments, name);
+					return;
+				} else {
+					document.getElementById('processing').innerHTML="<h1>Processing...</h1><h2>(" + index + " Pictures Processed)";
+					var nextCall = id + "/albums?offset=" + (offset + 1) + "&limit=1&fields=name,photos.limit(100).since(" + since + ").fields(source,likes.limit(1000),comments.limit(1000)),count";
+					getPictures(id, nextCall, index, offset + 1, since, pictures, totalLikes, totalComments, name);
+					return;
+					// console.log("final count: " + index);
+				}
+			} else {
+				console.log("Final picture count: " + index);
+				processPictureData(id, since, pictures, totalLikes, totalComments, name);
+			}
+		});
+	}
+	
+	function processPictureData(id, since, pictures, totalLikes, totalComments, name) {
+		pictures.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+		})(1));
+			
+		// Display most popular uploaded pictures
+		document.getElementById('uploaded').innerHTML=name.substring(0, name.indexOf(" ")) + "'s Most Popular Uploaded Pictures";
+		index = Math.min(3, pictures.length);
+		for (var i = 1; i <= index; i++) {
+			var current_picture = document.getElementById(("pic_" + i));
+			var current_name = document.getElementById(("pic_name_" + i));
+			current_picture.src = pictures[i - 1][0];
+			current_name.innerHTML = pictures[i - 1][1] + " likes";
 		}
-	};
+		if (index < 3) {
+			for (var i = 3; i > index; i--) {
+				document.getElementById('pic1' + i).innerHTML = '<p style="text-align:center;maring-top:20%;">No tagged picture in timeframe given</p>';
+			}
+		}
+		getTagged(id, since, name);
+		getStatuses(id, since, totalLikes, totalComments, name);
+	}
+	
+	// Display the most popular pictures the person is tagged in (limited by FB to 400)
+	function getTagged(id, since, name) {
+		FB.api((id + "/photos/tagged?limit=400&fields=likes.limit(10000),source&since=" + since), function(response) {
+			var taggedPictures = new Array();
+			for (var i = 0; i < response.data.length; i++) {
+				var likes;
+				var dat = response.data[i];
+				if (dat.likes != null)
+					likes = dat.likes.data.length;
+				else
+					likes = 0;
+				taggedPictures[i] = new Array(dat.source, likes);
+			}
+			
+			// Sort the pictures based on the number of likes (index 1)
+			taggedPictures.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+			})(1));
+			
+			// Display most popular tagged photos
+			document.getElementById('tagged').innerHTML=("Most Popular Pictures " + name.substring(0, name.indexOf(" ")) + "'s Tagged In");
+			index = Math.min(3, taggedPictures.length);
+			for (var i = 1; i <= index; i++) {
+					var current_picture = document.getElementById(("pic2_" + i));
+					var current_name = document.getElementById(("pic2_name_" + i));
+				
+					current_picture.src = taggedPictures[i - 1][0];
+					current_name.innerHTML = taggedPictures[i - 1][1] + " likes";
+			}
+			if (index < 3) {
+				for (var i = 3; i > index; i--) {
+					document.getElementById('pic2' + i).innerHTML = '<p style="text-align:center">No tagged picture in timeframe given</p>';
+				}
+			}
+		});
+	}
+	
+	// Log likes and comments from user statuses
+	function getStatuses(id, since, totalLikes, totalComments, name) {
+		// Get the comment  data of statuses
+		FB.api((id + "/statuses?limit=10000&fields=comments.limit(10000),from,likes.limit(10000),message&since=" + since), function(response) {
+			var comment = new Array();
+			var statuses = new Array();
+			likecount = new Array();
+			for (var i = 0; i < response.data.length; i++) {
+				
+				 /////////////////////////////
+				////Most Popular Statuses////
+				var message = response.data[i].message;
+				if (message == null)
+					message = "(Hidden/Deleted Status)"
+				// convert new line characters into break tags
+				message = message.replace(/\n/g, '<br />');
+				var likes = 0;
+				if (response.data[i].likes != null)
+					likes = response.data[i].likes.data.length;
+				statuses[i] = new Array(message, likes);
+				
+				 ///////////////////////////
+				////Names of Commenters////
+				if (response.data[i].comments != null) {
+					comment[i] = response.data[i].comments.data; // returns the data array containing comments
+					// For every comment on that status...
+					for (var j = 0; j < comment[i].length; j++) {
+						var commenter = comment[i][j].from.name;
+						if (commenter != name) {
+							var found = false;
+							for (var k = 0; k < totalComments.length; k++) {
+								if (totalComments[k][0] == commenter) {
+									totalComments[k][1]++;
+									found = true;
+									break;
+								}
+							}
+							if (!found)
+								totalComments.push(new Array(commenter, 1));
+						}
+					}
+				}
+				 ///////////////////////
+				////Names of likers////
+				if (response.data[i].likes != null) {
+					comment[i] = response.data[i].likes.data; // returns the data array containing likes
+					for (var j = 0; j < comment[i].length; j++) {
+						var liker = comment[i][j].name;
+						var found = false;
+						for (var k = 0; k < totalLikes.length; k++) {
+							if (totalLikes[k][0] == liker) {
+								totalLikes[k][1]++;
+								found=true;
+								break;
+							}
+						}
+						if (!found) 
+							totalLikes.push(new Array(liker, 1));
+					}
+				}
+			}
+			
+			// Sort the statuses based on the number of likes
+			statuses.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+			})(1));
+			
+			index = Math.min(3, statuses.length);
+			
+			for (var i = 0; i < index; i++) {
+				document.getElementById("status_likes_" + (i+1)).innerHTML = statuses[i][1] + " likes";
+				document.getElementById("status_" + (i+1)).innerHTML = statuses[i][0];
+			}
+			if (index < 3) {
+				for (var i = 3; i > index; i--) {
+					document.getElementById("status_likes_" + i).innerHTML = '<h2>-</h2>';
+					document.getElementById("status_" + i).innerHTML = 'No status in the timeframe given';
+				}
+			}
+			
+			// Sort total commenters based on number of comments
+			totalComments.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+			})(1));
+			// Draw popularity graphs
+			index = Math.min(4, totalComments.length);
+			for (var i = 0; i < index; i++) {
+				var num = parseInt(100.0 * totalComments[i][1] / totalComments[0][1], 10) + "%";
+				document.getElementById("comments_graph_name_" + (i + 1)).innerHTML =  totalComments[i][0]+ " / " + totalComments[i][1];
+				document.getElementById("comments_graph_" + (i + 1)).style.width = num;
+			}
+			
+			// Sort the total likes
+			totalLikes.sort((function(index){
+				return function(a, b) {
+					return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+				};
+			})(1));
+			// Most likes graph
+			index = Math.min(4, totalLikes.length);
+			for (var i = 1; i <= index; i++) {
+				var num = parseInt(100.0 * totalLikes[i - 1][1] / totalLikes[0][1], 10) + "%";
+				document.getElementById("likes_graph_name_" + i).innerHTML =  totalLikes[i - 1][0]+ " / " + totalLikes[i - 1][1];
+				document.getElementById("likes_graph_" + i).style.width = num;
+			}
+			// Basically repeat the process with likes
+			getFinalInfo(id, totalLikes, totalComments, since);
+		});
+	}
+	
+	function getFinalInfo(id, totalLikes, totalComments, since) {
+		var total = new Array();
+		for (var i = 0; i < totalLikes.length; i++) {
+			total[i] = new Array(totalLikes[i][0], totalLikes[i][1], 0, 0);
+		}
+		for (var i = 0; i < totalComments.length; i++) {
+			var found = false;
+			var currentName = totalComments[i][0];
+			var currentComments = totalComments[i][1];
+			for (var j = 0; j < totalLikes.length; j++) {
+				if (total[j][0] == currentName) {
+					found = true;
+					total[j][2] = currentComments;
+					break;
+				}
+			}
+			if (!found)
+				total.push(new Array(currentName, 0, currentComments, 0));
+		}
+		for (var i = 0; i < total.length; i++) {
+			total[i][3] = (total[i][1] + (total[i][2] * 1.5));
+		}
+		// Sorted list of "best" friends where 1 comment is equal to 1.5 likes
+		total.sort((function(index){
+			return function(a, b) {
+				return (a[index] === b[index] ? 0 : (a[index] > b[index] ? -1 : 1));
+			};
+		})(3));
+		// Write top friends
+		index = Math.min(total.length, 3);
+		for (var i = 0; i < index; i++) {
+			document.getElementById("best_friend_" + (i + 1)).innerHTML = total[i][0];
+			document.getElementById("friend_" + (i + 1)).innerHTML = total[i][2] + ' comments and ' + total[i][1] + ' likes';
+		}
+		if (index < 3) {
+			for (var i = 3; i > index; i--) {
+				document.getElementById("best_friend_" + i).innerHTML = '-';
+				document.getElementById("friend_" + i).innerHTML = 'No friend for the timeframe given';
+			}
+		}
+		getFriendUsers(id, since);
+	}
+	
+	// Get the names of all the user's friends who use this app
+	function getFriendUsers(id, since) {
+		FB.api('/fql', { q:{"query1":"SELECT uid FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1=me())AND is_app_user=1"}}, function(response) {
+			document.getElementById('users').innerHTML+='You are the only one out of all your friends that uses QuickView';
+			var users = new Array();
+			var links = new Array();
+			var dat = response.data[0].fql_result_set;
+			var len = 0;
+			for (var i = 0; i < dat.length; i++) {
+				console.log("for loop" + len);
+				var path = dat[i]['uid'];
+				FB.api(path + '/', function(response) {
+					links[len] = response['link'];
+					users[len] = response.name;
+					if (len == dat.length - 1) {
+						document.getElementById('users').innerHTML="";
+						for (var i = 0; i < len + 1; i++) {
+							document.getElementById('users').innerHTML+='<a href="' + links[i] + '" target="_blank">' + users[i] + '</a>, ';
+							timer = false;
+						}
+						document.getElementById('users').innerHTML+='and You use QuickView';
+						document.getElementById("loggedIn").style.display="block";
+						document.getElementById("processing").style.display="none";
+					}
+					len++;
+				});
+			}
+			/*
+			var call = id + "/albums?limit=1&fields=name,photos.limit(100).since(" + since + ").fields(source),count";
+			getPictures(id, call, 0, 0, since);
+			*/
+			// Processing is over once this is done, so display the results
+			if (dat.length == 0) {
+				document.getElementById("loggedIn").style.display="block";
+				document.getElementById("processing").style.display="none";
+			}
+		});
+	}
+	
+	function addOwnName(names) {
+		FB.api('/me?fields=name', function(response) {
+			names.push(response.name);
+			names.sort();
+			$( "#tags" ).autocomplete({
+				source: names
+			});
+		});
+	}
 };
 
 // Load the SDK asynchronously
@@ -959,7 +814,6 @@ function testAPI() {
                 <p class="lead" id="pic_name_3"></p>
               </div>
             </div>
-    
           
           </div>
       </div>
@@ -1108,7 +962,7 @@ function testAPI() {
         </div>
       </div>
       <div id="login">
-      	<div class="fb-login-button" scope="basic_info, friends_photos, friends_status, friends_online_presence, friends_relationships, 
+      	<div class="fb-login-button" scope="basic_info, friends_photos, friends_status, friends_relationships, 
         			user_photos, user_status, user_relationships, user_likes, friends_likes, user_location, friends_location" 
                     data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
       </div>
